@@ -6,5 +6,5 @@ create table series (
     official_url text,
     pamphlet_front_id text,
     pamphlet_back_id text,
-    brand_id bigint references brand (id)
+    brand_id bigint not null references brand (id)
 )
