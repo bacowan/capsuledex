@@ -23,7 +23,7 @@ export async function GET(
         .select('*, brand(*), variant(*)')
         .eq('barcode', barcodeInt)
         .single()
-    if (error || data === null) {
+    if (error) {
         if (error.code === "PGRST116") {
             return Response.json({ error: 'Not found' }, { status: 404 })
         }
