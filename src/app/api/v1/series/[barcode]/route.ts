@@ -1,4 +1,5 @@
 import supabase from "@/lib/supabase"
+import { z } from 'zod'
 
 export async function GET(
     request: Request,
@@ -39,4 +40,58 @@ export async function GET(
             }))
         })
     }
+}
+
+const formDataSchema = z.object({
+    name: z.string().optional(),
+    line: z.string().optional(),
+    brand_id: z.string(),
+})
+
+export async function POST(
+    request: Request,
+    { params }: { params: Promise<{ barcode: string }> }
+) {
+    const { barcode } = await params
+    const barcodeInt = parseInt(barcode)
+    const body = await request.json()
+
+    // validate input
+    const parsedFormData = formDataSchema.safeParse(body)
+    if (!parsedFormData.success) {
+        return Response.json({ error: z.treeifyError(parsedFormData.error) }, { status: 400 })
+    }
+
+    // check for duplicate
+    const { data: existingSeries } = await supabase
+        .from('series')
+        .select('id')
+        .eq('barcode', barcodeInt)
+        .maybeSingle()
+    if (existingSeries !== null) {
+        return Response.json({ error: `Series with given barcode already exists` }, { status: 409 })
+    }
+
+    // get foreign keys
+        const { data: brandData, error: brandError } = await supabase
+        .from('brand')
+        .select()
+        .eq('public_id', parsedFormData.data.brand_id)
+        .single()
+    if (brandError) {
+        return Response.json({ error: 'Brand with given ID does not exist' }, { status: 422 })
+    }
+
+    // insert data
+    const { error: insertError } = await supabase.from('series').insert({
+        barcode: barcodeInt,
+        name: parsedFormData.data.name,
+        line: parsedFormData.data.line,
+        brand_id: brandData.id
+    })
+    if (insertError) {
+        return Response.json({ error: "Failed to insert series" }, { status: 500 })
+    }
+
+    return Response.json({ barcode: barcodeInt }, { status: 201 })
 }
