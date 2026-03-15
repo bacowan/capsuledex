@@ -1,4 +1,4 @@
 insert into storage.buckets
-  (id, name)
+  (id, name, public)
 values
-  ('public_images', 'public_images');
+  ('public_images', 'public_images', true);
