@@ -1,3 +1,4 @@
+import isBarcodeValid from "@/lib/barcode"
 import supabase from "@/lib/supabase"
 import { z } from 'zod'
 
@@ -6,11 +7,10 @@ export async function GET(
     { params }: { params: Promise<{ barcode: string }>}
 ) {
     const { barcode } = await params
-    const barcodeInt = parseInt(barcode)
     const { data, error } = await supabase
         .from('series')
         .select('*, brand(*), variant(*)')
-        .eq('barcode', barcodeInt)
+        .eq('barcode', barcode)
         .single()
     if (error) {
         if (error.code === "PGRST116") {
@@ -53,7 +53,6 @@ export async function POST(
     { params }: { params: Promise<{ barcode: string }> }
 ) {
     const { barcode } = await params
-    const barcodeInt = parseInt(barcode)
     const body = await request.json()
 
     // validate input
@@ -66,7 +65,7 @@ export async function POST(
     const { data: existingSeries } = await supabase
         .from('series')
         .select('id')
-        .eq('barcode', barcodeInt)
+        .eq('barcode', barcode)
         .maybeSingle()
     if (existingSeries !== null) {
         return Response.json({ error: `Series with given barcode already exists` }, { status: 409 })
@@ -82,9 +81,14 @@ export async function POST(
         return Response.json({ error: 'Brand with given ID does not exist' }, { status: 422 })
     }
 
+    // validate barcode
+    if (!isBarcodeValid(barcode)) {
+        return Response.json({ error: "Invalid barcode" }, { status: 415 })
+    }
+
     // insert data
     const { error: insertError } = await supabase.from('series').insert({
-        barcode: barcodeInt,
+        barcode: barcode,
         name: parsedFormData.data.name,
         line: parsedFormData.data.line,
         brand_id: brandData.id
@@ -93,5 +97,5 @@ export async function POST(
         return Response.json({ error: "Failed to insert series" }, { status: 500 })
     }
 
-    return Response.json({ barcode: barcodeInt }, { status: 201 })
+    return Response.json({ barcode: barcode }, { status: 201 })
 }
