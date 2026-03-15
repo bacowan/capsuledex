@@ -1,4 +1,5 @@
 import supabase from "@/lib/supabase"
+import sharp from "sharp"
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"]
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024 // 5MB
@@ -36,11 +37,14 @@ export async function POST(
 
     // TODO: moderation
 
+    // remove metadata
+    const stripped = await sharp(buffer).toBuffer()
+
     const id = crypto.randomUUID()
     const path = `series/${barcode}/pamphlets/front/${id}.${contentType.slice('image/'.length)}`
     const { error: uploadError } = await supabase.storage
         .from('public_images')
-        .upload(path, buffer)
+        .upload(path, stripped)
     if (uploadError) {
         return Response.json({ error: "Failed to upload image" }, { status: 500 })
     }
