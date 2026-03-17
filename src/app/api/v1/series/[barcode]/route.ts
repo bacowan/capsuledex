@@ -45,7 +45,7 @@ export async function GET(
 const formDataSchema = z.object({
     name: z.string().optional(),
     line: z.string().optional(),
-    brand_id: z.string(),
+    brand_id: z.uuid(),
     variants: z.array(z.string())
 })
 
