@@ -1,6 +1,6 @@
 create table series (
     id bigint primary key generated always as identity,
-    barcode char(13) not null,
+    barcode char(13) unique not null,
     name text,
     line text,
     official_url text,

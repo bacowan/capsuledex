@@ -72,7 +72,7 @@ export async function POST(
     }
 
     // get foreign keys
-        const { data: brandData, error: brandError } = await supabase
+    const { data: brandData, error: brandError } = await supabase
         .from('brand')
         .select()
         .eq('public_id', parsedFormData.data.brand_id)
