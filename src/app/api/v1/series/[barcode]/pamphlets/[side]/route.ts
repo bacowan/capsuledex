@@ -7,8 +7,15 @@ const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024 // 5MB
 
 export async function PUT(
     request: Request,
-    { params }: { params: Promise<{ barcode: string }>}
+    { params }: { params: Promise<{ barcode: string, side: string }>}
 ) {
+    const { barcode, side } = await params
+
+    if (side !== 'front' && side !== 'back') {
+        return Response.json({ error: 'Not found' }, { status: 404 })
+    }
+    const validSide = side as 'front' | 'back'
+
     const user = await authorize(request)
     if (user instanceof Response) {
         return user
@@ -24,7 +31,6 @@ export async function PUT(
         return Response.json({ error: "Image must be 5MB or less" }, { status: 413 })
     }
     
-    const { barcode } = await params
     const { data: seriesData, error: seriesError } = await supabase
         .from('series')
         .select('*, brand(*), variant(*)')
@@ -51,7 +57,7 @@ export async function PUT(
         .from('pamphlet')
         .select('file_name')
         .eq('series_id', seriesData.id)
-        .eq('is_front', true)
+        .eq('is_front', validSide === 'front')
         .eq('created_user_id', user.id)
         .maybeSingle()
 
@@ -64,7 +70,7 @@ export async function PUT(
         // upload the file
         const id = crypto.randomUUID()
         const fileName = `${id}.${contentType.slice('image/'.length)}`
-        const path = `series/${barcode}/pamphlets/front/${fileName}`
+        const path = `series/${barcode}/pamphlets/${validSide}/${fileName}`
         const { error: uploadError } = await supabase.storage
             .from('public_images')
             .upload(path, stripped)
@@ -76,7 +82,7 @@ export async function PUT(
         // update the database
         const { error: insertError } = await supabase.from('pamphlet').insert({
             file_name: fileName,
-            is_front: true,
+            is_front: validSide === 'front',
             created_user_id: user.id,
             series_id: seriesData.id,
         })
@@ -93,7 +99,7 @@ export async function PUT(
     }
     // update the file if it does
     else {
-        const path = `series/${barcode}/pamphlets/front/${pamphletData.file_name}`
+        const path = `series/${barcode}/pamphlets/${validSide}/${pamphletData.file_name}`
         const { error: uploadError } = await supabase.storage
             .from('public_images')
             .update(path, stripped)
