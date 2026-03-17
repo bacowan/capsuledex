@@ -46,6 +46,7 @@ const formDataSchema = z.object({
     name: z.string().optional(),
     line: z.string().optional(),
     brand_id: z.string(),
+    variants: z.array(z.string())
 })
 
 export async function POST(
@@ -87,13 +88,26 @@ export async function POST(
     }
 
     // insert data
-    const { error: insertError } = await supabase.from('series').insert({
+    const { data: insertedData, error: insertError } = await supabase.from('series').insert({
         barcode: barcode,
         name: parsedFormData.data.name,
         line: parsedFormData.data.line,
         brand_id: brandData.id
-    })
+    }).select('id')
     if (insertError) {
+        return Response.json({ error: "Failed to insert series" }, { status: 500 })
+    }
+
+    const { error: insertVariantsError } = await supabase.from('variant')
+        .insert(parsedFormData.data.variants.map(v => ({
+            public_id: crypto.randomUUID(),
+            name: v,
+            series_id: insertedData[0].id
+        })));
+    
+    if (insertVariantsError) {
+        // rollback
+        supabase.from('series').delete().eq('barcode', barcode)
         return Response.json({ error: "Failed to insert series" }, { status: 500 })
     }
 
