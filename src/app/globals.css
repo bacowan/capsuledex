@@ -21,8 +21,12 @@
   --fg-accent-secondary:#be185d; /* lighter pink text          */
 
   /* Brand */
-  --brand:       #ec4899; /* pink-500 */
-  --brand-hover: #db2777; /* pink-600 */
+  --brand:      #ec4899; /* pink-500 */
+  --brand-hover:#db2777; /* pink-600 */
+  --brand-ring: #fce7f3; /* pink-100 — focus ring */
+
+  /* Surfaces — semantic */
+  --surface-success: #f0fdf4; /* green-50 — success / nature tint */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -41,8 +45,11 @@
     --fg-accent:           #f9a8d4; /* pink-300    */
     --fg-accent-secondary: #f472b6; /* pink-400    */
 
-    --brand:       #ec4899;
-    --brand-hover: #db2777;
+    --brand:      #ec4899;
+    --brand-hover:#db2777;
+    --brand-ring: #500724; /* pink-950 */
+
+    --surface-success: #052e16; /* green-950 */
   }
 }
 
@@ -66,8 +73,11 @@
   --color-fg-accent:           var(--fg-accent);
   --color-fg-accent-secondary: var(--fg-accent-secondary);
 
-  --color-brand:       var(--brand);
-  --color-brand-hover: var(--brand-hover);
+  --color-brand:           var(--brand);
+  --color-brand-hover:     var(--brand-hover);
+  --color-brand-ring:      var(--brand-ring);
+
+  --color-surface-success: var(--surface-success);
 }
 
 /* ─── Base styles ────────────────────────────────────────────────────────── */
