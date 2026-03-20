@@ -5,8 +5,8 @@ export default function SurpriseMeSection() {
     <section className="border-y border-edge-subtle py-4 px-5 flex flex-col items-center gap-3">
 
       {/* Revealed state — TODO: show only when a result is available */}
-      <div className="w-full max-w-[340px] border border-edge-accent rounded-xl overflow-hidden">
-        <div className="flex items-center px-3 py-2 bg-accent-surface border-b border-edge-accent">
+      <article className="w-full max-w-[340px] border border-edge-accent rounded-xl overflow-hidden">
+        <header className="flex items-center px-3 py-2 bg-accent-surface border-b border-edge-accent">
           <span className="text-[11px] uppercase tracking-wider font-medium text-fg-accent">
             Random pick
           </span>
@@ -14,12 +14,12 @@ export default function SurpriseMeSection() {
           <button className="ml-auto bg-transparent border-none text-fg-accent-secondary text-sm opacity-70 hover:opacity-100 p-0">
             ×
           </button>
-        </div>
+        </header>
 
         <div className="flex items-center gap-3 p-3">
-          <div className="w-12 h-12 rounded-lg border border-edge-subtle bg-surface-success flex items-center justify-center text-2xl shrink-0">
+          <figure className="w-12 h-12 rounded-lg border border-edge-subtle bg-surface-success flex items-center justify-center text-2xl shrink-0 m-0">
             🍄
-          </div>
+          </figure>
           <div>
             <p className="text-[10px] uppercase tracking-wider text-fg-muted mb-0.5">Epoch</p>
             <p className="text-[13px] font-medium text-fg mb-0.5">Mushroom Forest</p>
@@ -30,7 +30,7 @@ export default function SurpriseMeSection() {
             View
           </button>
         </div>
-      </div>
+      </article>
 
       {/* Button — "Surprise me" when idle, "Another one" when revealed */}
       {/* TODO: fetch random series and show card on click */}
