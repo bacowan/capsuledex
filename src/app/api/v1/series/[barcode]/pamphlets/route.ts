@@ -1,28 +1,25 @@
 import supabase from "@/lib/supabase";
+import { getPamphletsByBarcode, Pamphlet } from "./sql/getPamphletsByBarcode";
 
 export async function GET(
-    request: Request,
+    _request: Request,
     { params }: { params: Promise<{ barcode: string }>}
 ) {
     const { barcode } = await params
 
-    const { data: seriesData, error: seriesError } = await supabase
-        .from('series')
-        .select('pamphlet!left(file_name, is_front)')
-        .eq('barcode', barcode)
-        .single()
-    
-    if (seriesError) {
-        if (seriesError.code === "PGRST116") {
-            return Response.json({ error: 'Not found' }, { status: 404 })
-        }
-        else {
-            console.log(seriesError)
-            return Response.json({ error: 'An unexpected error occurred' }, { status: 500 })
-        }
+    let pamphlets: Pamphlet[] | null
+    try {
+        pamphlets = await getPamphletsByBarcode(barcode)
+    } catch (error) {
+        console.log(error)
+        return Response.json({ error: 'An unexpected error occurred' }, { status: 500 })
     }
-    
-    return Response.json({ data: seriesData.pamphlet.map(p => {
+
+    if (pamphlets === null) {
+        return Response.json({ error: 'Not found' }, { status: 404 })
+    }
+
+    return Response.json({ data: pamphlets.map(p => {
         const path = `series/${barcode}/pamphlets/${p.is_front ? 'front' : 'back'}/${p.file_name}`
         const { data } = supabase.storage.from('public_images').getPublicUrl(path)
         return {
