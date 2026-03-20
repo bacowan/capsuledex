@@ -1,45 +1,43 @@
 import isBarcodeValid from "@/lib/barcode"
 import supabase from "@/lib/supabase"
 import { z } from 'zod'
+import { getSeriesByBarcode, Series } from "./sql/getSeriesByBarcode"
 
 export async function GET(
     request: Request,
     { params }: { params: Promise<{ barcode: string }>}
 ) {
     const { barcode } = await params
-    const { data, error } = await supabase
-        .from('series')
-        .select('*, brand(*), variant(*)')
-        .eq('barcode', barcode)
-        .single()
-    if (error) {
-        if (error.code === "PGRST116") {
-            return Response.json({ error: 'Not found' }, { status: 404 })
-        }
-        else {
-            console.log(error)
-            return Response.json({ error: 'An unexpected error occurred' }, { status: 500 })
-        }
+
+    let series: Series | null
+    try {
+        series = await getSeriesByBarcode(barcode)
+    } catch (error) {
+        console.log(error)
+        return Response.json({ error: 'An unexpected error occurred' }, { status: 500 })
     }
-    else {
-        return Response.json({
-            "barcode": data.barcode,
-            "line": data.line,
-            "name": data.name,
-            "url": data.official_url,
-            "pamphlet-front-id": data.pamphlet_front_id,
-            "pamphlet-back-id": data.pamphlet_back_id,
-            "brand": {
-                "id": data.brand.public_id,
-                "name": data.brand.name,
-                "url": data.brand.official_url
-            },
-            "variants": data.variant.map(v => ({
-                id: v.id,
-                name: v.name
-            }))
-        })
+
+    if (series === null) {
+        return Response.json({ error: 'Not found' }, { status: 404 })
     }
+
+    return Response.json({
+        "barcode": series.barcode,
+        "line": series.line,
+        "name": series.name,
+        "url": series.url,
+        "pamphlet-front-id": series.pamphlet_front_id,
+        "pamphlet-back-id": series.pamphlet_back_id,
+        "brand": {
+            id: series.brand.id,
+            name: series.brand.name,
+            url: series.brand.url
+        },
+        "variants": series.variants?.map(v => ({
+            id: v.id,
+            name: v.name
+        })) ?? [],
+    }, { status: 200 })
 }
 
 const formDataSchema = z.object({
