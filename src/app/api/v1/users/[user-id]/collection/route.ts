@@ -1,6 +1,7 @@
 import authorize from "@/lib/authorize"
-import supabase from "@/lib/supabase"
 import { z } from 'zod'
+import { getCollection } from "./sql/getCollection"
+import { upsertCollection } from "./sql/upsertCollection"
 
 export async function GET(
     request: Request,
@@ -10,45 +11,39 @@ export async function GET(
     if (user instanceof Response) {
         return user
     }
-    
+
     let userId = (await params)['user-id']
     if (userId === 'me') {
         userId = user.id
     }
 
-    const { data: userData, error: userError } = await supabase
-        .from('user_profile')
-        .select('id, is_collection_public')
-        .eq('public_id', userId)
-        .single()
-    if (userError) {
-        return Response.json({ error: "forbidden" }, { status: 403 })
-    }
-
-    if (userId !== user.id && !userData.is_collection_public) {
-        return Response.json({ error: "forbidden" }, { status: 403 })
-    }
-
-    const { data: collectionData, error: collectionError } = await supabase
-        .from('user_collection')
-        .select("variant(public_id, name, series(barcode, name, line, brand(public_id, name)))")
-        .eq('user_id', userData.id)
-    
-    if (collectionError || !collectionData) {
+    let collection: Awaited<ReturnType<typeof getCollection>>
+    try {
+        collection = await getCollection(userId)
+    } catch (error) {
+        console.log(error)
         return Response.json({ error: 'Unexpected error' }, { status: 500 })
     }
 
-    return Response.json({ variants: collectionData.map(c => ({
-        id: c.variant.public_id,
-        name: c.variant.name,
+    if (collection === null) {
+        return Response.json({ error: 'forbidden' }, { status: 403 })
+    }
+
+    if (userId !== user.id && !collection.is_collection_public) {
+        return Response.json({ error: 'forbidden' }, { status: 403 })
+    }
+
+    return Response.json({ variants: (collection.collection ?? []).map(c => ({
+        id: c.variant_id,
+        name: c.variant_name,
         series: {
-            barcode: c.variant.series.barcode,
-            name: c.variant.series.name,
-            line: c.variant.series.line,
+            barcode: c.barcode,
+            name: c.series_name,
+            line: c.line,
         },
         brand: {
-            id: c.variant.series.brand.public_id,
-            name: c.variant.series.brand.name
+            id: c.brand_id,
+            name: c.brand_name,
         }
     }))}, { status: 200 })
 }
@@ -67,43 +62,26 @@ export async function PUT(
         return user
     }
 
-    if (userId !== user.id && userId !== "me") {
-        return Response.json({ error: "forbidden" }, { status: 403 })
+    if (userId !== user.id && userId !== 'me') {
+        return Response.json({ error: 'forbidden' }, { status: 403 })
     }
 
     const body = await request.json()
-    // validate input
     const parsedFormData = formDataSchema.safeParse(body)
     if (!parsedFormData.success) {
         return Response.json({ error: z.treeifyError(parsedFormData.error) }, { status: 400 })
     }
 
-    // get foreign keys
-    const { data: variantData, error: variantError } = await supabase
-        .from('variant')
-        .select('id')
-        .eq('public_id', parsedFormData.data['variant-id'])
-        .single()
-    if (variantError) {
-        return Response.json({ error: 'Variant with given ID does not exist' }, { status: 422 })
-    }
-
-    const { data: userData, error: userError } = await supabase
-        .from('user_profile')
-        .select('id')
-        .eq('public_id', user.id)
-        .single()
-    if (userError) {
+    let found: boolean
+    try {
+        found = await upsertCollection(parsedFormData.data['variant-id'], user.id)
+    } catch (error) {
+        console.log(error)
         return Response.json({ error: 'Unexpected error' }, { status: 500 })
     }
 
-    // insert data
-    const { error: insertError } = await supabase.from('user_collection').upsert({
-        variant_id: variantData.id,
-        user_id: userData.id
-    })
-    if (insertError) {
-        return Response.json({ error: "Failed to insert the data" }, { status: 500 })
+    if (!found) {
+        return Response.json({ error: 'Variant with given ID does not exist' }, { status: 422 })
     }
 
     return Response.json({}, { status: 201 })
