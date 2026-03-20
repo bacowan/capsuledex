@@ -4,11 +4,11 @@ const japanCountryCodes = new Set([
 
 const checksum = (barcode: string): number => {
     let sum = 0;
-    for (let i = 0; i < barcode.length - 2; i++) {
+    for (let i = 0; i < barcode.length - 1; i++) {
         const multiplier = i % 2 === 0 ? 1 : 3
         sum += parseInt(barcode[i]) * multiplier
     }
-    return sum % 10
+    return (10 - (sum % 10)) % 10
 }
 
 const isBarcodeValid = (barcode: string): boolean => {

@@ -2,6 +2,9 @@ import isBarcodeValid from "@/lib/barcode"
 import supabase from "@/lib/supabase"
 import { z } from 'zod'
 import { getSeriesByBarcode, Series } from "./sql/getSeriesByBarcode"
+import { insertSeries } from "./sql/insertSeries"
+import postgres from "postgres"
+import { ERROR_CODES } from "@/lib/dbConstants"
 
 export async function GET(
     request: Request,
@@ -60,54 +63,33 @@ export async function POST(
         return Response.json({ error: z.treeifyError(parsedFormData.error) }, { status: 400 })
     }
 
-    // check for duplicate
-    const { data: existingSeries } = await supabase
-        .from('series')
-        .select('id')
-        .eq('barcode', barcode)
-        .maybeSingle()
-    if (existingSeries !== null) {
-        return Response.json({ error: `Series with given barcode already exists` }, { status: 409 })
-    }
-
-    // get foreign keys
-    const { data: brandData, error: brandError } = await supabase
-        .from('brand')
-        .select()
-        .eq('public_id', parsedFormData.data.brand_id)
-        .single()
-    if (brandError) {
-        return Response.json({ error: 'Brand with given ID does not exist' }, { status: 422 })
-    }
-
     // validate barcode
     if (!isBarcodeValid(barcode)) {
         return Response.json({ error: "Invalid barcode" }, { status: 415 })
     }
 
-    // insert data
-    const { data: insertedData, error: insertError } = await supabase.from('series').insert({
+    let insertedData: string[]
+    try {
+        insertedData = await insertSeries(
+            barcode,
+            parsedFormData.data.name ?? null,
+            parsedFormData.data.line ?? null,
+            parsedFormData.data.brand_id,
+            parsedFormData.data.variants)
+    }
+    catch (error) {
+        if (error instanceof postgres.PostgresError && error.code === ERROR_CODES.UNIQUE_VIOLATION) {
+            return Response.json({ error: `Series with given barcode already exists` }, { status: 409 })
+        }
+        else if (error instanceof postgres.PostgresError && error.code === ERROR_CODES.FOREIGN_KEY_VIOLATION) {
+            return Response.json({ error: 'Brand with given ID does not exist' }, { status: 422 })
+        }
+        else {
+            return Response.json({ error: "Failed to insert" }, { status: 500 })
+        }
+    }
+    return Response.json({
         barcode: barcode,
-        name: parsedFormData.data.name,
-        line: parsedFormData.data.line,
-        brand_id: brandData.id
-    }).select('id')
-    if (insertError) {
-        return Response.json({ error: "Failed to insert series" }, { status: 500 })
-    }
-
-    const { error: insertVariantsError } = await supabase.from('variant')
-        .insert(parsedFormData.data.variants.map(v => ({
-            public_id: crypto.randomUUID(),
-            name: v,
-            series_id: insertedData[0].id
-        })));
-    
-    if (insertVariantsError) {
-        // rollback
-        supabase.from('series').delete().eq('barcode', barcode)
-        return Response.json({ error: "Failed to insert series" }, { status: 500 })
-    }
-
-    return Response.json({ barcode: barcode }, { status: 201 })
+        variants: insertedData
+    }, { status: 201 })
 }
