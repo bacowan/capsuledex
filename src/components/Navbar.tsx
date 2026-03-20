@@ -2,7 +2,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-10 w-full bg-surface border-b border-edge h-13 flex items-center px-4">
       {/* TODO: use Next.js <Link href="/"> */}
-      <a className="flex items-center gap-2 mr-auto cursor-pointer">
+      <a className="flex items-center gap-2 mr-auto">
         <div className="w-[22px] h-[22px] rounded-full border-2 border-brand flex items-center justify-center">
           <div className="w-[10px] h-[10px] rounded-full bg-brand" />
         </div>
