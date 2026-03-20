@@ -41,14 +41,14 @@ export async function PUT(
     let publicUrl: string
     try {
         publicUrl = await sql.begin(async _tx => {
-            const fileName = await upsertPamphlet(
+            const found = await upsertPamphlet(
                 barcode,
                 newFileName,
                 validSide === 'front',
                 user.id)
-            if (fileName === null) throw { notFound: true }
+            if (!found) throw { notFound: true }
 
-            const path = `series/${barcode}/pamphlets/${validSide}/${fileName}`
+            const path = `series/${barcode}/pamphlets/${validSide}/${newFileName}`
             const { error: uploadError } = await supabase.storage
                 .from('public_images')
                 .upload(path, stripped, { upsert: true })
