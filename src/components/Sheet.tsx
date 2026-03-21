@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface SheetProps {
   onClose: () => void
@@ -10,6 +10,17 @@ interface SheetProps {
 export default function Sheet({ onClose, children }: SheetProps) {
   const dragStartY = useRef<number>(0)
   const [dragOffset, setDragOffset] = useState(0)
+  const dialogRef = useRef<HTMLDialogElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
+        onClose()
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [onClose])
 
   function onDragStart(e: React.PointerEvent) {
     dragStartY.current = e.clientY
@@ -31,7 +42,7 @@ export default function Sheet({ onClose, children }: SheetProps) {
   }
 
   return (
-    <dialog open
+    <dialog open ref={dialogRef}
       className="fixed inset-x-0 bottom-0 w-full bg-surface rounded-t-2xl border-t border-edge overflow-hidden md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:w-[360px] md:border md:border-edge"
       style={{ transform: `translateY(${dragOffset}px)`, transition: dragOffset === 0 ? 'transform 0.2s' : 'none' }}
       onPointerDown={onDragStart}
