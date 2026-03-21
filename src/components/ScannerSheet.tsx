@@ -3,13 +3,23 @@
 import { useHomeContext } from "@/app/homeContext";
 import { useEffect, useRef, useState } from "react";
 import Sheet from "./Sheet";
+import { BarcodeFormat, BrowserMultiFormatReader, DecodeHintType } from "@zxing/library";
 
 export default function ScannerSheet() {
   const { sheetOpened, setSheetOpened } = useHomeContext()
   const [scanState, setScanState] = useState<"idle" | "scanning" | "not found" | "no permissions">("idle")
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const readerRef = useRef<BrowserMultiFormatReader>(null)
+  if (readerRef.current === null) {
+    readerRef.current = new BrowserMultiFormatReader(
+      new Map([
+        [DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.EAN_13]]
+      ])
+    )
+  }
 
+  // get the camera
   useEffect(() => {
     if (sheetOpened === "scan") {
       (async () => {
@@ -29,10 +39,17 @@ export default function ScannerSheet() {
     }
   }, [sheetOpened])
 
+  // play the video from the camera and scan it
   useEffect(() => {
-    if (sheetOpened === "scan" && videoRef.current !== null && cameraStream !== null) {
-      videoRef.current.srcObject = cameraStream
-    }
+    (async () => {
+      if (sheetOpened === "scan" && readerRef.current !== null && cameraStream !== null && videoRef.current !== null) {
+        await readerRef.current.decodeFromStream(cameraStream, videoRef.current, (res, err) => {
+          if (res) {
+            console.log(res.getText())
+          }
+        })
+      }
+    })()
   }, [cameraStream, sheetOpened])
 
   if (sheetOpened !== "scan") return <></>
@@ -41,7 +58,6 @@ export default function ScannerSheet() {
     <Sheet onClose={() => setSheetOpened(null)}>
 
       {/* ── State 1: Idle ── */}
-      {/* TODO: show only when state === "idle" */}
       {
         scanState === "idle" &&
         <section>
@@ -64,7 +80,6 @@ export default function ScannerSheet() {
             </p>
           </div>
           <footer className="px-3 pb-4 pt-2">
-            {/* TODO: close scanner, open manual entry sheet */}
             <button className="w-full py-2 border border-edge rounded-lg text-xs text-fg-secondary hover:bg-subtle transition-colors text-center">
               Enter barcode manually
             </button>
@@ -73,7 +88,6 @@ export default function ScannerSheet() {
       }
 
       {/* ── State 2: Scanning ── */}
-      {/* TODO: show only when state === "scanning" */}
       {
         scanState === "scanning" &&
         <section>
@@ -123,7 +137,6 @@ export default function ScannerSheet() {
       }
 
       {/* ── State 3: Not found ── */}
-      {/* TODO: show only when state === "not-found" */}
       {
         scanState === "not found" &&
         <section>
