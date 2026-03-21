@@ -1,10 +1,10 @@
 'use client'
 
 import { use, useState } from 'react'
-import SeriesHeader from './SeriesHeader'
-import PamphletSection from './PamphletSection'
-import VariantsSection from './VariantsSection'
-import SaveBar from './SaveBar'
+import SeriesHeader from './components/SeriesHeader'
+import PamphletSection from './components/PamphletSection'
+import VariantsSection from './components/VariantsSection'
+import SaveBar from './components/SaveBar'
 
 type Variant = { id: string; name: string }
 
