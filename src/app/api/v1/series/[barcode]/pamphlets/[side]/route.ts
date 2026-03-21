@@ -1,8 +1,6 @@
 import authorize from "@/lib/authorize"
-import supabase from "@/lib/supabase"
-import sharp from "sharp"
-import sql from "@/lib/db"
-import { upsertPamphlet } from "./sql/upsertPamphlet"
+import { uploadPamphlet } from "@/services/pamphlets"
+import { NotFoundError } from "@/services/errors"
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"]
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024 // 5MB
@@ -14,14 +12,11 @@ export async function PUT(
     const { barcode, side } = await params
 
     const user = await authorize(request)
-    if (user instanceof Response) {
-        return user
-    }
+    if (user instanceof Response) return user
 
     if (side !== 'front' && side !== 'back') {
         return Response.json({ error: 'Not found' }, { status: 404 })
     }
-    const validSide = side as 'front' | 'back'
 
     const contentType = request.headers.get("content-type") ?? ""
     if (!ALLOWED_MIME_TYPES.includes(contentType)) {
@@ -33,36 +28,11 @@ export async function PUT(
         return Response.json({ error: "Image must be 5MB or less" }, { status: 413 })
     }
 
-    // TODO: moderation
-
-    const stripped = await sharp(Buffer.from(buffer)).toBuffer()
-    const newFileName = `${crypto.randomUUID()}.${contentType.slice('image/'.length)}`
-
-    let publicUrl: string
     try {
-        publicUrl = await sql.begin(async _tx => {
-            const found = await upsertPamphlet(
-                barcode,
-                newFileName,
-                validSide === 'front',
-                user.id)
-            if (!found) throw { notFound: true }
-
-            const path = `series/${barcode}/pamphlets/${validSide}/${newFileName}`
-            const { error: uploadError } = await supabase.storage
-                .from('public_images')
-                .upload(path, stripped, { upsert: true })
-            if (uploadError) throw uploadError
-
-            return supabase.storage.from('public_images').getPublicUrl(path).data.publicUrl
-        })
-    } catch (error: any) {
-        if (error?.notFound) {
-            return Response.json({ error: 'Not found' }, { status: 404 })
-        }
+        return Response.json(await uploadPamphlet(barcode, side, buffer, contentType, user), { status: 201 })
+    } catch (error) {
+        if (error instanceof NotFoundError) return Response.json({ error: 'Not found' }, { status: 404 })
         console.log(error)
         return Response.json({ error: "Failed to upload image" }, { status: 500 })
     }
-
-    return Response.json({ url: publicUrl }, { status: 201 })
 }

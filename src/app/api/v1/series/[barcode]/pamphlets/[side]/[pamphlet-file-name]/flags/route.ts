@@ -1,6 +1,6 @@
 import authorize from "@/lib/authorize"
-import { insertFlag } from "./sql/insertFlag"
-import { deleteFlag } from "./sql/deleteFlag"
+import { addFlag, removeFlag } from "@/services/flags"
+import { NotFoundError } from "@/services/errors"
 
 export async function PUT(
     request: Request,
@@ -9,32 +9,20 @@ export async function PUT(
     const { barcode, side, 'pamphlet-file-name': pamphletFileName } = await params
 
     const user = await authorize(request)
-    if (user instanceof Response) {
-        return user
-    }
+    if (user instanceof Response) return user
 
     if (side !== 'front' && side !== 'back') {
         return Response.json({ error: 'Not found' }, { status: 404 })
     }
-    const validSide = side as 'front' | 'back'
 
-    let found: boolean
     try {
-        found = await insertFlag(
-            barcode,
-            validSide === 'front',
-            pamphletFileName,
-            user.id)
+        await addFlag(barcode, side === 'front', pamphletFileName, user)
+        return Response.json({}, { status: 201 })
     } catch (error) {
+        if (error instanceof NotFoundError) return Response.json({ error: 'Not found' }, { status: 404 })
         console.log(error)
         return Response.json({ error: 'Unexpected error' }, { status: 500 })
     }
-
-    if (!found) {
-        return Response.json({ error: 'Not found' }, { status: 404 })
-    }
-
-    return Response.json({}, { status: 201 })
 }
 
 export async function DELETE(
@@ -44,21 +32,17 @@ export async function DELETE(
     const { barcode, side, 'pamphlet-file-name': pamphletFileName } = await params
 
     const user = await authorize(request)
-    if (user instanceof Response) {
-        return user
-    }
+    if (user instanceof Response) return user
 
     if (side !== 'front' && side !== 'back') {
         return Response.json({ error: 'Not found' }, { status: 404 })
     }
-    const validSide = side as 'front' | 'back'
 
     try {
-        await deleteFlag(barcode, validSide === 'front', pamphletFileName, user.id)
+        await removeFlag(barcode, side === 'front', pamphletFileName, user)
+        return new Response(null, { status: 204 })
     } catch (error) {
         console.log(error)
         return Response.json({ error: 'Unexpected error' }, { status: 500 })
     }
-
-    return new Response(null, { status: 204 })
 }

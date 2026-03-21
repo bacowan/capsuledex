@@ -19,9 +19,9 @@ const seriesSchema = z.object({
     })).nullable(),
 })
 
-export type Series = z.infer<typeof seriesSchema>
+export type SeriesRow = z.infer<typeof seriesSchema>
 
-export async function getSeriesByBarcode(barcode: string): Promise<Series | null> {
+export async function findSeriesByBarcode(barcode: string): Promise<SeriesRow | null> {
     const rows = await sql`
         SELECT
             s.barcode, s.line, s.name, s.official_url AS url, s.pamphlet_front_id, s.pamphlet_back_id,
@@ -44,4 +44,31 @@ export async function getSeriesByBarcode(barcode: string): Promise<Series | null
     if (rows.length === 0) return null
 
     return seriesSchema.parse(rows[0])
+}
+
+const idSchema = z.object({ public_id: z.string() })
+
+export async function insertSeries(
+    barcode: string,
+    name: string | null,
+    line: string | null,
+    brandId: string,
+    variants: string[]
+): Promise<string[]> {
+    const rows = await sql`
+        WITH inserted_series AS (
+            INSERT INTO series (barcode, name, line, brand_id)
+            SELECT ${barcode}, ${name}, ${line}, b.id
+            FROM brand AS b
+            WHERE b.public_id = ${brandId}
+            RETURNING id
+        )
+        INSERT INTO variant (name, series_id)
+        SELECT v.name, inserted_series.id
+        FROM UNNEST(${variants}::text[]) as v(name)
+        CROSS JOIN inserted_series
+        RETURNING variant.public_id
+    `
+
+    return z.array(idSchema).parse(rows).map(r => r.public_id)
 }
