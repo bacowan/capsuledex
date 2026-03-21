@@ -1,4 +1,10 @@
+"use client"
+
+import { useHomeContext } from "@/app/homeContext";
+
 export default function Hero() {
+  const { setSheetOpened } = useHomeContext()
+
   return (
     <section className="w-full bg-surface border-b border-edge pt-9 pb-7 px-6 text-center">
       <p className="text-[11px] uppercase tracking-widest text-fg-muted mb-3">
@@ -14,7 +20,9 @@ export default function Hero() {
       {/* Mobile CTAs */}
       <div className="flex gap-2 w-full md:hidden">
         {/* TODO: open scanner sheet */}
-        <button className="flex-1 flex items-center justify-center gap-2 py-3 bg-brand text-white rounded-xl text-sm font-medium border-none hover:bg-brand-hover transition-colors">
+        <button
+          onClick={() => setSheetOpened("scan")}
+          className="flex-1 flex items-center justify-center gap-2 py-3 bg-brand text-white rounded-xl text-sm font-medium border-none hover:bg-brand-hover transition-colors">
           <div className="w-[14px] h-[11px] flex flex-col justify-between shrink-0">
             <div className="h-[2px] w-full bg-white/90 rounded-sm" />
             <div className="h-[2px] w-[60%] bg-white/90 rounded-sm" />
@@ -24,7 +32,9 @@ export default function Hero() {
           Scan
         </button>
         {/* TODO: open manual entry sheet */}
-        <button className="flex-1 flex items-center justify-center py-3 border border-edge rounded-xl text-sm font-medium text-fg hover:bg-subtle transition-colors">
+        <button
+          onClick={() => setSheetOpened("manual")}
+          className="flex-1 flex items-center justify-center py-3 border border-edge rounded-xl text-sm font-medium text-fg hover:bg-subtle transition-colors">
           # Enter manually
         </button>
       </div>

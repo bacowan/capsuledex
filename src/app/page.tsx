@@ -1,18 +1,23 @@
 import Hero from "@/components/Hero";
 import SurpriseMeSection from "@/components/SurpriseMeSection";
 import RecentFeed from "@/components/RecentFeed";
+import { HomeContext, HomeContextProvider } from "./homeContext";
+import SheetBackdrop from "@/components/SheetBackdrop";
+import ScannerSheet from "@/components/ScannerSheet";
+import ManualEntrySheet from "@/components/ManualEntrySheet";
 
 export default function Home() {
   return (
     <main>
-      <Hero />
-      <SurpriseMeSection />
-      <RecentFeed />
+      <HomeContextProvider>
+        <Hero />
+        <SurpriseMeSection />
+        <RecentFeed />
 
-      {/* TODO: conditionally show based on open state */}
-      {/* <SheetBackdrop /> */}
-      {/* <ScannerSheet /> */}
-      {/* <ManualEntrySheet /> */}
+        <SheetBackdrop />
+        <ScannerSheet />
+        <ManualEntrySheet />
+      </HomeContextProvider>
     </main>
   );
 }

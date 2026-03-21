@@ -1,4 +1,10 @@
-// TODO: render behind sheets, clicking dismisses the open sheet
+"use client"
+
+import { useHomeContext } from "@/app/homeContext";
+
 export default function SheetBackdrop() {
-  return <div className="fixed inset-0 bg-black/40" />;
+  const { sheetOpened } = useHomeContext()
+  return sheetOpened
+      ? <div className="fixed inset-0 bg-black/40" />
+      : <></>
 }

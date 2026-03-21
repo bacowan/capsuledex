@@ -1,6 +1,12 @@
-// TODO: add "use client" when wiring up interactions
+"use client"
+
+import { useHomeContext } from "@/app/homeContext";
 
 export default function ManualEntrySheet() {
+  const { sheetOpened } = useHomeContext()
+
+  if (sheetOpened !== "manual") return <></>
+  
   return (
     <dialog open className="fixed inset-x-0 bottom-0 bg-surface rounded-t-2xl border-t border-edge overflow-hidden md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:w-[360px] md:border md:border-edge">
 
