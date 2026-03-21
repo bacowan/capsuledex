@@ -6,23 +6,31 @@ import Sheet from "./Sheet";
 
 export default function ScannerSheet() {
   const { sheetOpened, setSheetOpened } = useHomeContext()
-  const [scanState, setScanState] = useState<"idle" | "scanning" | "not found">("idle")
+  const [scanState, setScanState] = useState<"idle" | "scanning" | "not found" | "no permissions">("idle")
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
-    if (sheetOpened) {
+    if (sheetOpened === "scan") {
       (async () => {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: 'enviroment' }}
-        })
-        setCameraStream(stream)
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: 'enviroment' }}
+          })
+          setCameraStream(stream)
+        } catch (error) {
+          setScanState("no permissions")
+        }
       })()
+    }
+    else if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop())
+      setCameraStream(null)
     }
   }, [sheetOpened])
 
   useEffect(() => {
-    if (sheetOpened && videoRef.current !== null && cameraStream !== null) {
+    if (sheetOpened === "scan" && videoRef.current !== null && cameraStream !== null) {
       videoRef.current.srcObject = cameraStream
     }
   }, [cameraStream, sheetOpened])
@@ -86,6 +94,25 @@ export default function ScannerSheet() {
             <p className="absolute bottom-2 inset-x-0 text-center text-[11px] text-white/50">
               Found — looking up…
             </p>
+          </div>
+          <footer className="px-3 pb-4 pt-2">
+            <button className="w-full py-2 border border-edge rounded-lg text-xs text-fg-secondary hover:bg-subtle transition-colors text-center">
+              Enter barcode manually
+            </button>
+          </footer>
+        </section>
+      }
+
+      {/* ── State: No permissions ── */}
+      {
+        scanState === "no permissions" &&
+        <section>
+          <div className="bg-neutral-900 mx-3 rounded-xl overflow-hidden relative h-56">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center">
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xl">🚫</div>
+              <p className="text-white text-[13px] font-medium">Camera access required</p>
+              <p className="text-white/50 text-[11px]">Allow camera access in your browser settings, then reopen the scanner.</p>
+            </div>
           </div>
           <footer className="px-3 pb-4 pt-2">
             <button className="w-full py-2 border border-edge rounded-lg text-xs text-fg-secondary hover:bg-subtle transition-colors text-center">
