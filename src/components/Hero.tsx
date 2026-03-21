@@ -68,7 +68,9 @@ export default function Hero() {
         {/* Use camera link */}
         <div className="flex items-center gap-1 text-[11px] text-fg-muted">
           {/* TODO: open scanner sheet */}
-          <button className="flex items-center gap-1 bg-transparent border-none text-[11px] text-fg-muted hover:text-fg-secondary p-0">
+          <button
+            className="flex items-center gap-1 bg-transparent border-none text-[11px] text-fg-muted hover:text-fg-secondary p-0"
+            onClick={() => setSheetOpened("scan")}>
             <div className="w-[11px] h-[11px] rounded-full border-[1.5px] border-current flex items-center justify-center">
               <div className="w-[3px] h-[3px] bg-current rounded-full ml-px" />
             </div>
