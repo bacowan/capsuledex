@@ -1,10 +1,10 @@
-import Hero from "@/app/components/Hero";
-import SurpriseMeSection from "@/app/components/SurpriseMeSection";
-import RecentFeed from "@/app/components/RecentFeed";
+import Hero from "./components/Hero";
+import SurpriseMeSection from "./components/SurpriseMeSection";
+import RecentFeed from "./components/RecentFeed";
 import { HomeContext, HomeContextProvider } from "./homeContext";
-import SheetBackdrop from "@/app/components/SheetBackdrop";
-import ScannerSheet from "@/app/components/ScannerSheet";
-import ManualEntrySheet from "@/app/components/ManualEntrySheet";
+import SheetBackdrop from "./components/SheetBackdrop";
+import ScannerSheet from "./components/ScannerSheet";
+import ManualEntrySheet from "./components/ManualEntrySheet";
 
 export default function Home() {
   return (

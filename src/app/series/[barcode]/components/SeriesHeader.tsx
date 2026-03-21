@@ -33,7 +33,7 @@ export default function SeriesHeader({ loading, barcode, series }: Props) {
             >
                 {series.brand.name}
             </Link>
-            <h1 className="text-[22px] font-medium tracking-tight leading-tight text-fg mb-1.5">
+            <h1 className="text-[22px] sm:text-[28px] font-medium tracking-tight leading-tight text-fg mb-1.5">
                 {series.name ?? series.line ?? 'Untitled Series'}
             </h1>
             <p className="font-mono text-[12px] text-fg-secondary tracking-wider">

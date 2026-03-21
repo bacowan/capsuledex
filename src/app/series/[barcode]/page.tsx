@@ -75,9 +75,9 @@ export default function SeriesPage({
     }
 
     return (
-        <div className="max-w-[480px] mx-auto pb-12">
+        <div className="max-w-[480px] sm:max-w-2xl mx-auto pb-12">
 
-            <div className="pt-5 pb-4 px-5 border-b border-edge">
+            <div className="pt-5 pb-4 px-5 sm:pt-8 sm:pb-6 sm:px-8 border-b border-edge">
                 <SeriesHeader loading={loadingSeries} barcode={barcode} series={series} />
             </div>
 
@@ -94,7 +94,7 @@ export default function SeriesPage({
             <VariantsSection
                 loading={loadingSeries}
                 barcode={barcode}
-                variants={series?.variants ?? []}
+                variants={[]}
                 owned={owned}
                 onToggle={toggleVariant}
             />

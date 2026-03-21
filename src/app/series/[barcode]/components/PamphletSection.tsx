@@ -29,7 +29,7 @@ export default function PamphletSection({
     const current = images[imageIndex]
 
     return (
-        <div className="py-4 px-5 border-b border-edge">
+        <div className="py-4 px-5 sm:py-6 sm:px-8 border-b border-edge">
             {/* Section header */}
             <div className="flex items-center justify-between mb-3">
                 <span className="text-[11px] font-medium text-fg-secondary uppercase tracking-widest">

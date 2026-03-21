@@ -8,7 +8,7 @@ type Props = {
 
 export default function SaveBar({ hasUnsavedChanges, isSaving, onSave }: Props) {
     return (
-        <div className="py-4 px-5">
+        <div className="py-4 px-5 sm:py-6 sm:px-8">
             <p className="text-[11px] text-fg-muted text-center mb-2.5">
                 {hasUnsavedChanges ? (
                     'Unsaved changes'

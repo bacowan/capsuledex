@@ -15,7 +15,7 @@ export default function VariantsSection({ loading, barcode, variants, owned, onT
     const totalCount = variants.length
 
     return (
-        <div className="py-4 px-5 border-b border-edge">
+        <div className="py-4 px-5 sm:py-6 sm:px-8 border-b border-edge">
             {/* Section header */}
             <div className="flex items-center justify-between mb-2">
                 <span className="text-[13px] font-medium text-fg">Variants</span>
@@ -38,8 +38,8 @@ export default function VariantsSection({ loading, barcode, variants, owned, onT
 
             {/* Loading */}
             {loading && (
-                <div className="grid grid-cols-3 gap-2">
-                    {Array.from({ length: 9 }).map((_, i) => (
+                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
+                    {Array.from({ length: 10 }).map((_, i) => (
                         <div key={i} className="rounded-[10px] bg-subtle animate-pulse aspect-square" />
                     ))}
                 </div>
@@ -47,7 +47,7 @@ export default function VariantsSection({ loading, barcode, variants, owned, onT
 
             {/* Grid */}
             {!loading && variants.length > 0 && (
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
                     {variants.map((v, i) => (
                         <VariantCard
                             key={v.id}
