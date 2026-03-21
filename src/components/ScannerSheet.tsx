@@ -1,11 +1,28 @@
 "use client"
 
 import { useHomeContext } from "@/app/homeContext";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function ScannerSheet() {
   const { sheetOpened } = useHomeContext()
   const [scanState, setScanState] = useState<"idle" | "scanning" | "not found">("idle")
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    (async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'enviroment' }}
+      })
+      setCameraStream(stream)
+    })()
+  }, [])
+
+  useEffect(() => {
+    if (sheetOpened && videoRef.current !== null && cameraStream !== null) {
+      videoRef.current.srcObject = cameraStream
+    }
+  }, [cameraStream, sheetOpened])
 
   if (sheetOpened !== "scan") return <></>
 
@@ -21,6 +38,9 @@ export default function ScannerSheet() {
         scanState === "idle" &&
         <section>
           <div className="bg-neutral-900 mx-3 rounded-xl overflow-hidden relative h-56">
+            <video className="absolute inset-0 w-full h-full object-cover"
+              autoPlay playsInline muted
+              ref={videoRef}/>
             <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(0deg,transparent,transparent_3px,white_3px,white_4px)]" />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-40 h-24 relative">
@@ -31,10 +51,6 @@ export default function ScannerSheet() {
                 <div className="absolute top-1/2 left-3 right-3 h-px bg-pink-400 opacity-90 -translate-y-px" />
               </div>
             </div>
-            {/* TODO: toggle torch */}
-            <button className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white text-xs border-none">
-              ⚡
-            </button>
             <p className="absolute bottom-2 inset-x-0 text-center text-[11px] text-white/50">
               Point at a barcode
             </p>
