@@ -45,12 +45,16 @@ export default function Sheet({ onClose, children }: SheetProps) {
     <dialog open ref={dialogRef}
       className="fixed inset-x-0 bottom-0 w-full bg-surface rounded-t-2xl border-t border-edge overflow-hidden md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:w-[360px] md:border md:border-edge"
       style={{ transform: `translateY(${dragOffset}px)`, transition: dragOffset === 0 ? 'transform 0.2s' : 'none' }}
-      onPointerDown={onDragStart}
-      onPointerMove={onDragMove}
-      onPointerUp={onDragEnd}
     >
       {/* Drag handle — mobile only */}
-      <div className="w-9 h-1 bg-edge rounded-full mx-auto mt-3 mb-1 md:hidden" />
+      <div
+        className="w-full flex justify-center py-2 md:hidden"
+        onPointerDown={onDragStart}
+        onPointerMove={onDragMove}
+        onPointerUp={onDragEnd}
+      >
+        <div className="w-9 h-1 bg-edge rounded-full" />
+      </div>
 
       {children}
     </dialog>
