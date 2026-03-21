@@ -11,7 +11,7 @@ export type SeriesResponse = {
     'pamphlet-front-id': string | null
     'pamphlet-back-id': string | null
     brand: { id: string; name: string; url: string | null }
-    variants: { id: number; name: string }[]
+    variants: { id: string; name: string }[]
 }
 
 // throws NotFoundError

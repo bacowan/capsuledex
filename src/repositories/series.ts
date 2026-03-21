@@ -14,7 +14,7 @@ const seriesSchema = z.object({
         url: z.string().nullable(),
     }),
     variants: z.array(z.object({
-        id: z.number(),
+        id: z.string(),
         name: z.string(),
     })).nullable(),
 })
@@ -31,7 +31,7 @@ export async function findSeriesByBarcode(barcode: string): Promise<SeriesRow | 
                 'url', b.official_url
             ) AS brand,
             json_agg(json_build_object(
-                'id', v.id,
+                'id', v.public_id,
                 'name', v.name
             )) AS variants
         FROM series AS s
