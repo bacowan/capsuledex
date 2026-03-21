@@ -2,21 +2,24 @@
 
 import { useHomeContext } from "@/app/homeContext";
 import { useEffect, useRef, useState } from "react";
+import Sheet from "./Sheet";
 
 export default function ScannerSheet() {
-  const { sheetOpened } = useHomeContext()
+  const { sheetOpened, setSheetOpened } = useHomeContext()
   const [scanState, setScanState] = useState<"idle" | "scanning" | "not found">("idle")
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
-    (async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'enviroment' }}
-      })
-      setCameraStream(stream)
-    })()
-  }, [])
+    if (sheetOpened) {
+      (async () => {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'enviroment' }}
+        })
+        setCameraStream(stream)
+      })()
+    }
+  }, [sheetOpened])
 
   useEffect(() => {
     if (sheetOpened && videoRef.current !== null && cameraStream !== null) {
@@ -27,10 +30,7 @@ export default function ScannerSheet() {
   if (sheetOpened !== "scan") return <></>
 
   return (
-    <dialog open className="fixed inset-x-0 bottom-0 w-full bg-surface rounded-t-2xl border-t border-edge overflow-hidden md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:w-[360px] md:border md:border-edge">
-
-      {/* Drag handle — mobile only */}
-      <div className="w-9 h-1 bg-edge rounded-full mx-auto mt-3 mb-1 md:hidden" />
+    <Sheet onClose={() => setSheetOpened(null)}>
 
       {/* ── State 1: Idle ── */}
       {/* TODO: show only when state === "idle" */}
@@ -130,6 +130,6 @@ export default function ScannerSheet() {
         </section>
       }
 
-    </dialog>
+    </Sheet>
   );
 }
