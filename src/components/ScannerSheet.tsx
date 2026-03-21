@@ -1,7 +1,7 @@
 "use client"
 
 import { useHomeContext } from "@/app/homeContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sheet from "./Sheet";
 import ScannerScanning from "./scanner/ScannerScanning";
 import ScannerNotFound from "./scanner/ScannerNotFound";
@@ -22,6 +22,12 @@ export default function ScannerSheet() {
   const [scanStep, setScanStep] = useState<ScanStep>("scanning")
   const [capturedImage, setCapturedImage] = useState<string | null>(null)
   const [parseResult, setParseResult] = useState<CapsuleData | null>(null)
+
+  useEffect(() => {
+    if (sheetOpened === null) {
+      setScanStep("scanning")
+    }
+  }, [sheetOpened])
 
   if (sheetOpened !== "scan") return <></>
 
