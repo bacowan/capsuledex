@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import { BarcodeFormat, BrowserMultiFormatReader, DecodeHintType } from "@zxing/library"
+import { useRouter } from "next/navigation"
 
 type Props = {
   onNotFound: () => void
@@ -10,12 +11,27 @@ type Props = {
 }
 
 export default function ScannerScanning({ onNotFound, onManualEntry, onNoPermissions }: Props) {
+  const router = useRouter()
   const videoRef = useRef<HTMLVideoElement>(null)
   const readerRef = useRef<BrowserMultiFormatReader>(null)
   if (readerRef.current === null) {
     readerRef.current = new BrowserMultiFormatReader(
       new Map([[DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.EAN_13]]])
     )
+  }
+
+  const loadSeriesByBarcode = async (barcode: string) => {
+    // TODO: disable camera/ show loading spinner
+    const result = await fetch(`/api/v1/series/${barcode}`)
+    if (result.ok) {
+      router.push(`/capsules/${barcode}`)
+    }
+    else if (result.status === 404) {
+      onNotFound()
+    }
+    else {
+      // TODO: Error handling
+    }
   }
 
   useEffect(() => {
@@ -26,11 +42,12 @@ export default function ScannerScanning({ onNotFound, onManualEntry, onNoPermiss
           video: { facingMode: { ideal: 'environment' }}
         })
         if (videoRef.current && readerRef.current) {
-          readerRef.current.decodeFromStream(stream, videoRef.current, (res) => {
+          readerRef.current.decodeFromStream(stream, videoRef.current, (res, err) => {
             if (res) {
-              console.log(res.getText())
-              // TODO: look up barcode in DB — navigate if found, else:
-              onNotFound()
+              loadSeriesByBarcode(res.getText())
+            }
+            else if (err) {
+              // TODO: Error handling
             }
           })
         }
