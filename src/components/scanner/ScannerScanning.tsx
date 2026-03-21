@@ -1,8 +1,9 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { BarcodeFormat, BrowserMultiFormatReader, DecodeHintType } from "@zxing/library"
 import { useRouter } from "next/navigation"
+import isBarcodeValid from "@/lib/barcode"
 
 type Props = {
   onNotFound: () => void
@@ -14,23 +15,37 @@ export default function ScannerScanning({ onNotFound, onManualEntry, onNoPermiss
   const router = useRouter()
   const videoRef = useRef<HTMLVideoElement>(null)
   const readerRef = useRef<BrowserMultiFormatReader>(null)
+  const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
   if (readerRef.current === null) {
     readerRef.current = new BrowserMultiFormatReader(
       new Map([[DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.EAN_13]]])
     )
   }
 
+  function showError(message: string) {
+    setErrorMessage(message)
+    if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+    errorTimerRef.current = setTimeout(() => setErrorMessage(null), 3000)
+  }
+
   const loadSeriesByBarcode = async (barcode: string) => {
-    // TODO: disable camera/ show loading spinner
+    if (!isBarcodeValid(barcode)) {
+      showError("Invalid barcode")
+      return
+    }
+    setLoading(true)
     const result = await fetch(`/api/v1/series/${barcode}`)
+    setLoading(false)
+
     if (result.ok) {
       router.push(`/capsules/${barcode}`)
-    }
-    else if (result.status === 404) {
+    } else if (result.status === 404) {
       onNotFound()
-    }
-    else {
-      // TODO: Error handling
+    } else {
+      showError("Something went wrong")
     }
   }
 
@@ -59,6 +74,7 @@ export default function ScannerScanning({ onNotFound, onManualEntry, onNoPermiss
     return () => {
       readerRef.current?.reset()
       stream?.getTracks().forEach(track => track.stop())
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
     }
   }, [])
 
@@ -76,9 +92,26 @@ export default function ScannerScanning({ onNotFound, onManualEntry, onNoPermiss
             <div className="absolute top-1/2 left-3 right-3 h-px bg-pink-400 opacity-90 -translate-y-px" />
           </div>
         </div>
-        <p className="absolute bottom-2 inset-x-0 text-center text-[11px] text-white/50">
-          Point at a barcode
-        </p>
+
+        {/* Loading overlay */}
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+            <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+          </div>
+        )}
+
+        {/* Error overlay */}
+        {errorMessage && (
+          <div className="absolute inset-x-3 bottom-3 bg-black/70 rounded-lg px-3 py-2 flex items-center gap-2">
+            <p className="text-white text-[11px] text-center flex-1">{errorMessage}</p>
+          </div>
+        )}
+
+        {!loading && !errorMessage && (
+          <p className="absolute bottom-2 inset-x-0 text-center text-[11px] text-white/50">
+            Point at a barcode
+          </p>
+        )}
       </div>
       <footer className="px-3 pb-4 pt-2">
         <button
