@@ -18,5 +18,5 @@ export default async function SeriesPage({
         else throw error
     }
 
-    return <SeriesClientPage series={series!} collection={null} />
+    return <SeriesClientPage series={series} collection={null} />
 }
