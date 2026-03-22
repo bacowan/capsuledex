@@ -1,4 +1,4 @@
-import supabase from "@/lib/supabase"
+import supabase from "@/lib/supabase/jwtSupabase"
 
 const authorize = async (request: Request) => {
     const token = request.headers.get("authorization")?.replace("Bearer ", "")

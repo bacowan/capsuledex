@@ -1,5 +1,5 @@
 import 'server-only'
-import supabase from './supabase'
+import supabase from './jwtSupabase'
 
 export const getPamphletPath = (barcode: string, filename: string, side: "front" | "back") => {
     return `series/${barcode}/pamphlets/${side}/${filename}`

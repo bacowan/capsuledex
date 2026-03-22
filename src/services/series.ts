@@ -2,7 +2,7 @@ import postgres from "postgres"
 import { ERROR_CODES } from "@/lib/dbConstants"
 import { ConflictError, NotFoundError, UnprocessableError } from "./errors"
 import { findSeriesByBarcode, insertSeries } from "@/repositories/series"
-import { getPamphletUrl } from "@/lib/supabaseStorage"
+import { getPamphletUrl } from "@/lib/supabase/supabaseStorage"
 
 export type SeriesResponse = {
     barcode: string

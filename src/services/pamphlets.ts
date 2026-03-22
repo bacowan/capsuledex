@@ -1,9 +1,9 @@
 import sql from "@/lib/db"
-import supabase from "@/lib/supabase"
+import supabase from "@/lib/supabase/jwtSupabase"
 import sharp from "sharp"
 import { NotFoundError } from "./errors"
 import { findPamphletsByBarcode, upsertPamphlet } from "@/repositories/pamphlets"
-import { getPamphletPath } from "@/lib/supabaseStorage"
+import { getPamphletPath } from "@/lib/supabase/supabaseStorage"
 
 export type PamphletResponse = {
     'is-front': boolean
