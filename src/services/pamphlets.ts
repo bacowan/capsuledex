@@ -3,6 +3,7 @@ import supabase from "@/lib/supabase"
 import sharp from "sharp"
 import { NotFoundError } from "./errors"
 import { findPamphletsByBarcode, upsertPamphlet } from "@/repositories/pamphlets"
+import { getPamphletPath } from "@/lib/supabaseStorage"
 
 export type PamphletResponse = {
     'is-front': boolean
@@ -40,7 +41,7 @@ export async function uploadPamphlet(
         const found = await upsertPamphlet(barcode, newFileName, side === 'front', user.id)
         if (!found) throw new NotFoundError()
 
-        const path = `series/${barcode}/pamphlets/${side}/${newFileName}`
+        const path = getPamphletPath(barcode, newFileName, side)
         const { error: uploadError } = await supabase.storage
             .from('public_images')
             .upload(path, stripped, { upsert: true })

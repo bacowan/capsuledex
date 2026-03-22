@@ -2,14 +2,17 @@ import postgres from "postgres"
 import { ERROR_CODES } from "@/lib/dbConstants"
 import { ConflictError, NotFoundError, UnprocessableError } from "./errors"
 import { findSeriesByBarcode, insertSeries } from "@/repositories/series"
+import { getPamphletUrl } from "@/lib/supabaseStorage"
 
 export type SeriesResponse = {
     barcode: string
     line: string | null
     name: string | null
     url: string | null
-    'pamphlet-front-id': string | null
-    'pamphlet-back-id': string | null
+    'main-pamphlet': {
+        filename: string,
+        url: string
+    } | null
     brand: { id: string; name: string; url: string | null }
     variants: { id: string; name: string }[]
 }
@@ -24,8 +27,10 @@ export async function getSeries(barcode: string): Promise<SeriesResponse> {
         line: series.line,
         name: series.name,
         url: series.url,
-        'pamphlet-front-id': series.pamphlet_front_id,
-        'pamphlet-back-id': series.pamphlet_back_id,
+        'main-pamphlet': series.main_pamphlet_file_name ? {
+            filename: series.main_pamphlet_file_name,
+            url: getPamphletUrl(barcode, series.main_pamphlet_file_name, "front")
+        } : null,
         brand: series.brand,
         variants: series.variants ?? [],
     }

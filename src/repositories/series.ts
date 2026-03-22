@@ -6,8 +6,7 @@ const seriesSchema = z.object({
     line: z.string().nullable(),
     name: z.string().nullable(),
     url: z.string().nullable(),
-    pamphlet_front_id: z.string().nullable(),
-    pamphlet_back_id: z.string().nullable(),
+    main_pamphlet_file_name: z.string().nullable(),
     brand: z.object({
         id: z.string(),
         name: z.string(),
@@ -24,7 +23,7 @@ export type SeriesRow = z.infer<typeof seriesSchema>
 export async function findSeriesByBarcode(barcode: string): Promise<SeriesRow | null> {
     const rows = await sql`
         SELECT
-            s.barcode, s.line, s.name, s.official_url AS url, s.pamphlet_front_id, s.pamphlet_back_id,
+            s.barcode, s.line, s.name, s.official_url AS url,
             json_build_object(
                 'id', b.public_id,
                 'name', b.name,
@@ -33,7 +32,10 @@ export async function findSeriesByBarcode(barcode: string): Promise<SeriesRow | 
             json_agg(json_build_object(
                 'id', v.public_id,
                 'name', v.name
-            )) AS variants
+            )) AS variants,
+            (SELECT p.file_name FROM pamphlet AS p
+             WHERE p.series_id = s.id AND p.is_front = true
+             ORDER BY p.id ASC LIMIT 1) AS main_pamphlet_file_name
         FROM series AS s
         INNER JOIN brand AS b ON s.brand_id = b.id
         LEFT JOIN variant AS v ON v.series_id = s.id

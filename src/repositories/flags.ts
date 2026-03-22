@@ -10,7 +10,8 @@ export async function insertFlag(
         INSERT INTO pamphlet_flag (pamphlet_id, user_id)
         SELECT p.id, up.id
         FROM series AS s
-        INNER JOIN pamphlet AS p ON p.series_id = s.id
+        INNER JOIN pamphlet AS p
+            ON p.series_id = s.id
             AND p.is_front = ${isFront}
             AND p.file_name = ${fileName}
         INNER JOIN user_profile AS up ON up.public_id = ${userId}
@@ -32,7 +33,8 @@ export async function deleteFlag(
         WHERE pamphlet_id = (
             SELECT p.id
             FROM series AS s
-            INNER JOIN pamphlet AS p ON p.series_id = s.id
+            INNER JOIN pamphlet AS p
+                ON p.series_id = s.id
                 AND p.is_front = ${isFront}
                 AND p.file_name = ${fileName}
             WHERE s.barcode = ${barcode}

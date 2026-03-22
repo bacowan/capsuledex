@@ -1,10 +1,13 @@
-'use client'
-
-import { use, useState } from 'react'
 import SeriesHeader from './components/SeriesHeader'
 import PamphletSection from './components/PamphletSection'
 import VariantsSection from './components/VariantsSection'
 import SaveBar from './components/SaveBar'
+import { getSeries, SeriesResponse } from '@/services/series'
+import { NotFoundError } from '@/services/errors'
+import { notFound } from 'next/navigation'
+import SeriesClientPage from './clientPage'
+import { Suspense } from 'react'
+import { getPamphletUrl } from '@/lib/supabaseStorage'
 
 type Variant = { id: string; name: string }
 
@@ -22,89 +25,29 @@ type PamphletImage = {
     'file-name': string
 }
 
-export default function SeriesPage({
+export default async function SeriesPage({
     params,
 }: {
     params: Promise<{ barcode: string }>
 }) {
-    const { barcode } = use(params)
+    const { barcode } = await params
 
-    // TODO: fetch series and images, set these states
-    const series: SeriesData | null = null
-    const images: PamphletImage[] = []
-    const loadingSeries = false
-    const loadingImages = false
-    const token: string | null = null
-
-    const [imageIndex, setImageIndex] = useState(0)
-    const [owned, setOwned] = useState<Set<string>>(new Set())
-    const [saved, setSaved] = useState<Set<string>>(new Set())
-    const [isSaving, setIsSaving] = useState(false)
-
-    const hasUnsavedChanges = (() => {
-        if (owned.size !== saved.size) return true
-        for (const id of owned) if (!saved.has(id)) return true
-        return false
-    })()
-
-    function toggleVariant(id: string) {
-        if (!token) return // TODO: open sign-in
-        setOwned(prev => {
-            const next = new Set(prev)
-            next.has(id) ? next.delete(id) : next.add(id)
-            return next
-        })
+    let series: SeriesResponse
+    try {
+        series = await getSeries(barcode)
+    }
+    catch (error) {
+        if (error instanceof NotFoundError) {
+            notFound()
+        }
+        else {
+            throw error
+        }
     }
 
-    async function handleSave() {
-        if (!hasUnsavedChanges || isSaving || !token) return
-        setIsSaving(true)
-        // TODO: call collection API (PUT / DELETE for each changed variant)
-        setSaved(new Set(owned))
-        setIsSaving(false)
-    }
+    
 
-    function handleReport(fileName: string) {
-        if (!token) return // TODO: open sign-in
-        // TODO: PUT /api/v1/series/${barcode}/pamphlets/front/${fileName}/flags
-    }
-
-    function handleUpvote(_fileName: string) {
-        if (!token) return // TODO: open sign-in
-        // TODO: upvote endpoint TBD
-    }
-
-    return (
-        <div className="max-w-[480px] sm:max-w-2xl mx-auto pb-12">
-
-            <div className="pt-5 pb-4 px-5 sm:pt-8 sm:pb-6 sm:px-8 border-b border-edge">
-                <SeriesHeader loading={loadingSeries} barcode={barcode} series={series} />
-            </div>
-
-            <PamphletSection
-                loading={loadingImages}
-                barcode={barcode}
-                images={images}
-                imageIndex={imageIndex}
-                onIndexChange={setImageIndex}
-                onReport={handleReport}
-                onUpvote={handleUpvote}
-            />
-
-            <VariantsSection
-                loading={loadingSeries}
-                barcode={barcode}
-                variants={[]}
-                owned={owned}
-                onToggle={toggleVariant}
-            />
-
-            <SaveBar
-                hasUnsavedChanges={hasUnsavedChanges}
-                isSaving={isSaving}
-                onSave={handleSave}
-            />
-
-        </div>
-    )
+    return <Suspense>
+        <SeriesClientPage series={series} collection={null}/>
+    </Suspense>
 }
