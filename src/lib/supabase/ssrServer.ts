@@ -2,7 +2,6 @@ import 'server-only'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-// https://supabase.com/docs/guides/auth/server-side/creating-a-client?queryGroups=framework&framework=nextjs
 export async function createClient() {
   const cookieStore = await cookies()
   return createServerClient(

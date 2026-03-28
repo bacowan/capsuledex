@@ -1,4 +1,4 @@
-import authorize from "@/lib/authorize"
+import authorize from "@/lib/supabase/jwtAuthorize"
 import { addFlag, removeFlag } from "@/services/flags"
 import { NotFoundError } from "@/services/errors"
 

@@ -1,4 +1,4 @@
-import authorize from "@/lib/authorize"
+import authorize from "@/lib/supabase/jwtAuthorize"
 import { z } from 'zod'
 import { getCollection, addToCollection, removeFromCollection } from "@/services/collection"
 import { ForbiddenError, NotFoundError } from "@/services/errors"

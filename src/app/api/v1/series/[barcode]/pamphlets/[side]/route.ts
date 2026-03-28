@@ -1,4 +1,4 @@
-import authorize from "@/lib/authorize"
+import authorize from "@/lib/supabase/jwtAuthorize"
 import { uploadPamphlet } from "@/services/pamphlets"
 import { NotFoundError } from "@/services/errors"
 

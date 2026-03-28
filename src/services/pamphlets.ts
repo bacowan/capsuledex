@@ -3,7 +3,7 @@ import supabase from "@/lib/supabase/jwtSupabase"
 import sharp from "sharp"
 import { NotFoundError } from "./errors"
 import { findPamphletsByBarcode, upsertPamphlet } from "@/repositories/pamphlets"
-import { getPamphletPath } from "@/lib/supabase/supabaseStorage"
+import { getPamphletPath } from "@/lib/supabaseStorage"
 
 export type PamphletResponse = {
     'is-front': boolean
