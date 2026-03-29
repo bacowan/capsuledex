@@ -1,7 +1,8 @@
 'use client'
 
 import createClient from "@/lib/supabase/ssrClient";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface NavbarClientProps {
     isLoggedIn: boolean
@@ -9,6 +10,12 @@ interface NavbarClientProps {
 
 export default function NavbarClient({ isLoggedIn }: NavbarClientProps) {
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const nextPath = searchParams.get('next')
+    ?? (searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname)
+
 
   const logOut = async () => {
     const client = createClient()
@@ -45,12 +52,10 @@ export default function NavbarClient({ isLoggedIn }: NavbarClientProps) {
           <div className="w-px h-[18px] bg-edge mx-1" />
         </nav>
 
-        <button className="px-3.5 py-1.5 text-sm border border-edge rounded-lg text-fg hover:bg-subtle"
-                onClick={logOut}>
-          { isLoggedIn
-            ? "Sign out"
-            : "Sign in" }
-        </button>
+        {isLoggedIn
+          ? <button className="px-3.5 py-1.5 text-sm border border-edge rounded-lg text-fg hover:bg-subtle" onClick={logOut}>Sign out</button>
+          : <Link href={`/auth?next=${nextPath}`} className="px-3.5 py-1.5 text-sm border border-edge rounded-lg text-fg hover:bg-subtle">Sign in</Link>
+        }
 
         {/* Hamburger label — toggles the checkbox, visible on mobile only */}
         <label htmlFor="nav-toggle" className="sm:hidden ml-2 p-2 rounded-lg hover:bg-subtle text-fg">
