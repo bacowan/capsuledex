@@ -2,8 +2,8 @@ insert into brand (public_id, name, official_url) values
     ('7ae38af8-2e20-4814-9da5-27274b47f18a', 'Bandai', 'https://gashapon.jp/'),
     ('04e32583-0e2a-400a-9fb9-879913b20b70', 'Amuse', 'https://www.amunet.co.jp/');
 
-insert into series (barcode, name, line, official_url, pamphlet_front_id, pamphlet_back_id, brand_id)
-    select '4534943758095', 'あまじないフィギュア', 'チョコン九尾', null, null, null, id from brand
+insert into series (barcode, name, line, official_url, brand_id)
+    select '4534943758095', 'あまじないフィギュア', 'チョコン九尾', null, id from brand
     where name = 'Amuse';
 
 insert into variant (name, public_id, series_id)

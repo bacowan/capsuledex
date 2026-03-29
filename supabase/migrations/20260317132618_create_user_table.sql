@@ -12,7 +12,7 @@ BEGIN
     INSERT INTO public.user_profile (public_id)
     VALUES (NEW.id);
   ELSIF TG_OP = 'DELETE' THEN
-    DELETE FROM public.profiles WHERE id = OLD.id;
+    DELETE FROM public.user_profile WHERE public_id = OLD.id;
   END IF;
   RETURN NEW;
 END;
