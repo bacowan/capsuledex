@@ -1,7 +1,5 @@
-import { getUser, getUserId } from "@/lib/getUser"
+import { getUser } from "@/lib/getUser"
 import AuthPageClient from "./pageClient"
-import { createClient } from "@/lib/supabase/ssrServer"
-import { NextResponse } from "next/server"
 import { redirect } from "next/navigation"
 
 export default async function AuthPage({
@@ -9,8 +7,8 @@ export default async function AuthPage({
 }: {
   searchParams: Promise<{ next?: string }>
 }) {
-  const userId = await getUserId()
-  if (userId) {
+  const user = await getUser()
+  if (user) {
     const { next } = await searchParams
     if (next && next.startsWith('/')) {
       redirect(next)

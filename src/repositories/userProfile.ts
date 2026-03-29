@@ -2,7 +2,7 @@ import sql from "@/lib/db"
 import { z } from "zod"
 
 const userProfileSchema = z.object({
-    id: z.int(),
+    id: z.coerce.number(),
     is_collection_public: z.boolean(),
 })
 

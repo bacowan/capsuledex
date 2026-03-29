@@ -1,4 +1,8 @@
-export default function Navbar() {
+import { getUser } from "@/lib/getUser";
+
+export default async function Navbar() {
+  const user = await getUser()
+
   return (
     <header className="group/nav sticky top-0 z-10 w-full bg-surface border-b border-edge">
       {/* Hidden checkbox drives the mobile menu open/close state */}
@@ -29,7 +33,9 @@ export default function Navbar() {
         </nav>
 
         <button className="px-3.5 py-1.5 text-sm border border-edge rounded-lg text-fg hover:bg-subtle">
-          Sign in
+          { user
+            ? "Sign out"
+            : "Sign in" }
         </button>
 
         {/* Hamburger label — toggles the checkbox, visible on mobile only */}

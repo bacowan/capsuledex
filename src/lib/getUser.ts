@@ -10,25 +10,21 @@ export interface User {
     isCollectionPublic: boolean
 }
 
-export const getUserId = async () => {
+export const getUser = cache(async () => {
     const client = await createClient()
     const { data } = await client.auth.getClaims()
-    return data?.claims.sub
-}
-
-export const getUser = cache(async (request: Request) => {
-    const user = await authorize(request)
-    if (user instanceof Response) {
+    const id = data?.claims.sub
+    if (!id) {
         return null
     }
 
-    const userProfile = await getUserProfile(user.id)
+    const userProfile = await getUserProfile(id)
     
     return userProfile === null
         ? null
         : {
             id: userProfile.id,
-            publicId: user.id,
+            publicId: id,
             isCollectionPublic: userProfile.is_collection_public
         }
 })
