@@ -2,7 +2,7 @@
 
 import createClient from "@/lib/supabase/ssrClient";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
@@ -51,9 +51,12 @@ export default function Navbar() {
           <button className="px-3 py-1.5 text-sm rounded-lg text-fg-secondary hover:bg-subtle hover:text-fg">
             Browse
           </button>
-          <button className="px-3 py-1.5 text-sm rounded-lg text-fg-secondary hover:bg-subtle hover:text-fg">
-            Collection
-          </button>
+          {
+            isLoggedIn &&
+            <button className="px-3 py-1.5 text-sm rounded-lg text-fg-secondary hover:bg-subtle hover:text-fg">
+              Collection
+            </button>
+          }
           <div className="w-px h-[18px] bg-edge mx-1" />
         </nav>
 
@@ -87,9 +90,12 @@ export default function Navbar() {
         <button className="px-3 py-2.5 text-sm rounded-lg text-fg-secondary hover:bg-subtle hover:text-fg text-left">
           Browse
         </button>
-        <button className="px-3 py-2.5 text-sm rounded-lg text-fg-secondary hover:bg-subtle hover:text-fg text-left">
-          Collection
-        </button>
+        {
+          isLoggedIn &&
+          <button className="px-3 py-2.5 text-sm rounded-lg text-fg-secondary hover:bg-subtle hover:text-fg text-left">
+            Collection
+          </button>
+        }
       </nav>
     </header>
   );
