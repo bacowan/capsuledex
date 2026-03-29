@@ -49,9 +49,8 @@ export default function SignUpForm() {
   }, [email])
 
   const onCreateAccountClicked = async () => {
-    const next = searchParams.get('next')
     const client = createClient()
-    const { data, error } = await client.auth.signUp({
+    const { data: _, error } = await client.auth.signUp({
       email: email,
       password: password,
     })
@@ -59,6 +58,7 @@ export default function SignUpForm() {
       setSubmitError(error.message)
     }
     else {
+      const next = searchParams.get('next')
       router.push(next && next.startsWith('/') ? next : '/')
     }
   }
@@ -91,7 +91,7 @@ export default function SignUpForm() {
 
       <button
         type="submit"
-        className="w-full py-2 px-4 bg-brand hover:bg-brand-hover text-white text-sm font-medium rounded-lg transition-colors mt-1"
+        className="w-full py-2 px-4 bg-brand hover:bg-brand-hover text-white text-sm font-medium rounded-lg transition-colors mt-1 cursor-pointer disabled:opacity-50 disabled:!cursor-default disabled:hover:bg-brand"
         disabled={!isFormValid}
         onClick={onCreateAccountClicked}
       >
