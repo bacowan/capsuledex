@@ -53,7 +53,8 @@ export default function Navbar() {
           </button>
           {
             isLoggedIn &&
-            <button className="px-3 py-1.5 text-sm rounded-lg text-fg-secondary hover:bg-subtle hover:text-fg">
+            // TODO: use usePathname() to derive active link
+            <button className="px-3 py-1.5 text-sm rounded-lg font-medium text-fg">
               Collection
             </button>
           }
@@ -92,7 +93,8 @@ export default function Navbar() {
         </button>
         {
           isLoggedIn &&
-          <button className="px-3 py-2.5 text-sm rounded-lg text-fg-secondary hover:bg-subtle hover:text-fg text-left">
+          // TODO: use usePathname() to derive active link
+          <button className="px-3 py-2.5 text-sm rounded-lg font-medium text-fg text-left">
             Collection
           </button>
         }
