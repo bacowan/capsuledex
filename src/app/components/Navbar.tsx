@@ -19,7 +19,6 @@ export default function Navbar() {
     const { data } = client.auth.onAuthStateChange((event, session) => {
         setIsLoggedIn(!!session?.user)
     })
-    // call unsubscribe to remove the callback
     return () => data.subscription.unsubscribe()
   }, [])
 
@@ -28,36 +27,39 @@ export default function Navbar() {
     await client.auth.signOut()
   }
 
+  const navLink = (href: string, label: string, mobile = false) => {
+    const active = pathname === href
+    const base = mobile
+      ? "px-3 py-2.5 text-sm rounded-lg text-left"
+      : "px-3 py-1.5 text-sm rounded-lg"
+    const style = active
+      ? "font-medium text-fg"
+      : "text-fg-secondary hover:bg-subtle hover:text-fg"
+    return (
+      <Link href={href} className={`${base} ${style}`}>
+        {label}
+      </Link>
+    )
+  }
+
   return (
     <header className="group/nav sticky top-0 z-10 w-full bg-surface border-b border-edge">
       {/* Hidden checkbox drives the mobile menu open/close state */}
       <input type="checkbox" id="nav-toggle" className="peer sr-only" />
 
       <div className="h-13 flex items-center px-4">
-        {/* TODO: use Next.js <Link href="/"> */}
-        <a className="flex items-center gap-2 mr-auto">
+        <Link href="/" className="flex items-center gap-2 mr-auto">
           <div className="w-[22px] h-[22px] rounded-full border-2 border-brand flex items-center justify-center">
             <div className="w-[10px] h-[10px] rounded-full bg-brand" />
           </div>
           <span className="text-base font-medium tracking-tight">gachabase</span>
-        </a>
+        </Link>
 
         {/* Nav links — hidden on mobile */}
-        {/* TODO: replace with <Link> and active state logic */}
         <nav className="hidden sm:flex items-center gap-1">
-          <button className="px-3 py-1.5 text-sm rounded-lg font-medium text-fg">
-            Home
-          </button>
-          <button className="px-3 py-1.5 text-sm rounded-lg text-fg-secondary hover:bg-subtle hover:text-fg">
-            Browse
-          </button>
-          {
-            isLoggedIn &&
-            // TODO: use usePathname() to derive active link
-            <button className="px-3 py-1.5 text-sm rounded-lg font-medium text-fg">
-              Collection
-            </button>
-          }
+          {navLink("/", "Home")}
+          {navLink("/browse", "Browse")}
+          {isLoggedIn && navLink("/collection", "Collection")}
           <div className="w-px h-[18px] bg-edge mx-1" />
         </nav>
 
@@ -83,21 +85,10 @@ export default function Navbar() {
       </div>
 
       {/* Mobile menu — revealed when checkbox is checked */}
-      {/* TODO: replace with <Link> and active state logic */}
       <nav className="hidden peer-checked:flex sm:hidden flex-col border-t border-edge px-2 py-2">
-        <button className="px-3 py-2.5 text-sm rounded-lg font-medium text-fg text-left">
-          Home
-        </button>
-        <button className="px-3 py-2.5 text-sm rounded-lg text-fg-secondary hover:bg-subtle hover:text-fg text-left">
-          Browse
-        </button>
-        {
-          isLoggedIn &&
-          // TODO: use usePathname() to derive active link
-          <button className="px-3 py-2.5 text-sm rounded-lg font-medium text-fg text-left">
-            Collection
-          </button>
-        }
+        {navLink("/", "Home", true)}
+        {navLink("/browse", "Browse", true)}
+        {isLoggedIn && navLink("/collection", "Collection", true)}
       </nav>
     </header>
   );
