@@ -1,6 +1,6 @@
 "use client"
 
-import { useHomeContext } from "@/app/homeContext";
+import { useHomeContext } from "@/app/context/homeContext";
 
 export default function SheetBackdrop() {
   const { sheetOpened } = useHomeContext()

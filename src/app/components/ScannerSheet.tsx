@@ -1,6 +1,6 @@
 "use client"
 
-import { useHomeContext } from "@/app/homeContext";
+import { useHomeContext } from "@/app/context/homeContext";
 import { useEffect, useState } from "react";
 import Sheet from "./Sheet";
 import ScannerScanning from "./scanner/ScannerScanning";

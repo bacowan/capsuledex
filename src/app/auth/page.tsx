@@ -1,5 +1,5 @@
 import { getUser } from "@/lib/getUser"
-import AuthPageClient from "./pageClient"
+import AuthPageClient from "./clientPage"
 import { redirect } from "next/navigation"
 
 export default async function AuthPage({

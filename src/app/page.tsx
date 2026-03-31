@@ -1,7 +1,7 @@
 import Hero from "./components/Hero";
 import SurpriseMeSection from "./components/SurpriseMeSection";
 import RecentFeed from "./components/RecentFeed";
-import { HomeContext, HomeContextProvider } from "./homeContext";
+import { HomeContextProvider } from "./context/homeContext";
 import SheetBackdrop from "./components/SheetBackdrop";
 import ScannerSheet from "./components/ScannerSheet";
 import ManualEntrySheet from "./components/ManualEntrySheet";
