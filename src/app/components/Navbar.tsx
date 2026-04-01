@@ -58,7 +58,6 @@ export default function Navbar() {
 
         {/* Nav links — hidden on mobile */}
         <nav className="hidden sm:flex items-center gap-1">
-          {navLink("/", "Home")}
           {navLink("/browse", "Browse")}
           {isLoggedIn && navLink("/collection", "Collection")}
           <div className="w-px h-[18px] bg-edge mx-1" />
@@ -87,7 +86,6 @@ export default function Navbar() {
 
       {/* Mobile menu — revealed when checkbox is checked */}
       <nav className="hidden peer-checked:flex sm:hidden flex-col border-t border-edge px-2 py-2">
-        {navLink("/", "Home", true)}
         {navLink("/browse", "Browse", true)}
         {isLoggedIn && navLink("/collection", "Collection", true)}
       </nav>
