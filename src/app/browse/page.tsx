@@ -2,6 +2,7 @@ import BrowseSearchBar from "./components/BrowseSearchBar";
 import BrowseTabs from "./components/BrowseTabs";
 import SeriesPanel from "./components/SeriesPanel";
 import CollectorsPanel from "./components/CollectorsPanel";
+import Pagination from "./components/Pagination";
 
 export default function BrowsePage() {
   return (
@@ -11,6 +12,7 @@ export default function BrowsePage() {
         <BrowseTabs />
         <SeriesPanel />
         <CollectorsPanel />
+        <Pagination currentPage={1} totalPages={5} />
       </div>
     </main>
   );
