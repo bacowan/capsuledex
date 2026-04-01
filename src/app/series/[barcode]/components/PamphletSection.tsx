@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Flag } from 'react-feather'
+import SectionHeader from '@/components/SectionHeader'
 
 type PamphletImage = {
     url: string
@@ -16,11 +17,7 @@ export default function PamphletSection({ barcode, pamphlet }: Props) {
 
     return (
         <div className="py-4 px-5 sm:py-6 sm:px-8 border-b border-edge">
-            {/* Section header */}
-            <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-medium text-fg-secondary uppercase tracking-widest">
-                    Pamphlet
-                </span>
+            <SectionHeader title="Pamphlet" variant="label" className="mb-3">
                 <div className="flex items-center">
                     <Link
                         href={`/series/${barcode}/pamphlets`}
@@ -33,7 +30,7 @@ export default function PamphletSection({ barcode, pamphlet }: Props) {
                         Add photo
                     </button>
                 </div>
-            </div>
+            </SectionHeader>
 
             {/* No image */}
             {!pamphlet && (

@@ -2,6 +2,7 @@
 
 import { useHomeContext } from "@/app/context/homeContext";
 import Sheet from "./Sheet";
+import Button from "@/components/Button";
 
 export default function ManualEntrySheet() {
   const { sheetOpened, setSheetOpened } = useHomeContext()
@@ -28,9 +29,9 @@ export default function ManualEntrySheet() {
         <p className="text-[11px] text-fg-muted text-center -mt-1">13-digit EAN barcode</p>
 
         {/* TODO: handle lookup */}
-        <button type="submit" className="w-full py-3 bg-brand text-white text-sm font-medium rounded-xl hover:bg-brand-hover transition-colors">
+        <Button type="submit" className="w-full py-3 text-sm rounded-xl">
           Look up
-        </button>
+        </Button>
       </form>
 
     </Sheet>

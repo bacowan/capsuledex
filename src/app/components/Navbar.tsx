@@ -1,6 +1,7 @@
 'use client'
 
 import createClient from "@/lib/supabase/ssrClient";
+import Button from "@/components/Button";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -64,7 +65,7 @@ export default function Navbar() {
         </nav>
 
         {isLoggedIn
-          ? <button className="px-3.5 py-1.5 text-sm border border-edge rounded-lg text-fg hover:bg-subtle" onClick={logOut}>Sign out</button>
+          ? <Button variant="secondary" className="px-3.5 py-1.5 text-sm rounded-lg" onClick={logOut}>Sign out</Button>
           : <Link href={`/auth?next=${nextPath}`} className="px-3.5 py-1.5 text-sm border border-edge rounded-lg text-fg hover:bg-subtle">Sign in</Link>
         }
 

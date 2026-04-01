@@ -1,6 +1,7 @@
 "use client"
 
 import { useHomeContext } from "@/app/context/homeContext";
+import Button from "@/components/Button";
 
 export default function Hero() {
   const { setSheetOpened } = useHomeContext()
@@ -20,9 +21,9 @@ export default function Hero() {
       {/* Mobile CTAs */}
       <div className="flex gap-2 w-full md:hidden">
         {/* TODO: open scanner sheet */}
-        <button
+        <Button
           onClick={() => setSheetOpened("scan")}
-          className="flex-1 flex items-center justify-center gap-2 py-3 bg-brand text-white rounded-xl text-sm font-medium border-none hover:bg-brand-hover transition-colors">
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm border-none">
           <div className="w-[14px] h-[11px] flex flex-col justify-between shrink-0">
             <div className="h-[2px] w-full bg-white/90 rounded-sm" />
             <div className="h-[2px] w-[60%] bg-white/90 rounded-sm" />
@@ -30,13 +31,14 @@ export default function Hero() {
             <div className="h-[2px] w-full bg-white/90 rounded-sm" />
           </div>
           Scan
-        </button>
+        </Button>
         {/* TODO: open manual entry sheet */}
-        <button
+        <Button
           onClick={() => setSheetOpened("manual")}
-          className="flex-1 flex items-center justify-center py-3 border border-edge rounded-xl text-sm font-medium text-fg hover:bg-subtle transition-colors">
+          variant="secondary"
+          className="flex-1 flex items-center justify-center py-3 rounded-xl text-sm font-medium">
           # Enter manually
-        </button>
+        </Button>
       </div>
 
       {/* Desktop barcode input */}
@@ -60,9 +62,9 @@ export default function Hero() {
             />
           </div>
           {/* TODO: handle lookup */}
-          <button className="px-4 h-[38px] bg-brand text-white text-sm font-medium rounded-xl shrink-0 hover:bg-brand-hover transition-colors">
+          <Button className="px-4 h-[38px] text-sm rounded-xl shrink-0">
             Look up
-          </button>
+          </Button>
         </div>
 
         {/* Use camera link */}

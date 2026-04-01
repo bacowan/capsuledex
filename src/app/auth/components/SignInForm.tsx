@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { isValidEmail } from "@/lib/email"
 import createClient from "@/lib/supabase/ssrClient"
 import { useRouter, useSearchParams } from "next/navigation"
+import Button from "@/components/Button"
 
 export default function SignInForm() {
   const searchParams = useSearchParams()
@@ -60,14 +61,14 @@ export default function SignInForm() {
         <p className="text-xs text-red-500 text-center">{submitError}</p>
       )}
 
-      <button
+      <Button
         type="submit"
         disabled={!isFormValid}
-        className="w-full py-2 px-4 bg-brand hover:bg-brand-hover text-white text-sm font-medium rounded-lg transition-colors mt-1 cursor-pointer disabled:opacity-50 disabled:!cursor-default disabled:hover:bg-brand"
+        className="w-full py-2 px-4 text-sm rounded-lg mt-1"
         onClick={login}
       >
         Sign in
-      </button>
+      </Button>
     </form>
   )
 }

@@ -1,3 +1,5 @@
+import Badge from "@/components/Badge"
+
 interface SeriesRowProps {
   coverBg: string;
   emoji: string;
@@ -26,7 +28,7 @@ export default function SeriesRow({ coverBg, emoji, name, brand, variantCount, i
           <span className="text-[13px] font-medium text-fg">{name}</span>
           <span className="text-[11px] text-fg-muted">{brand} · {variantCount} variants</span>
           {isNew && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-50 text-pink-700 font-medium shrink-0 w-fit">New</span>
+            <Badge>New</Badge>
           )}
         </div>
 
@@ -35,7 +37,7 @@ export default function SeriesRow({ coverBg, emoji, name, brand, variantCount, i
           <span className="text-sm font-medium text-fg">{name}</span>
           <span className="text-[11px] text-fg-muted">{brand}</span>
           {isNew && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-50 text-pink-700 font-medium shrink-0">New</span>
+            <Badge>New</Badge>
           )}
         </div>
 

@@ -1,5 +1,7 @@
 // TODO: add "use client" and useState to toggle between idle and revealed states
 
+import Button from "@/components/Button"
+
 export default function SurpriseMeSection() {
   return (
     <section className="border-y border-edge-subtle py-4 px-5 flex flex-col items-center gap-3">
@@ -26,17 +28,17 @@ export default function SurpriseMeSection() {
             <p className="text-xs text-fg-secondary">5 variants</p>
           </div>
           {/* TODO: navigate to series page */}
-          <button className="ml-auto shrink-0 px-3 py-1.5 bg-brand text-white text-xs font-medium rounded-lg hover:bg-brand-hover transition-colors">
+          <Button className="ml-auto shrink-0 px-3 py-1.5 text-xs rounded-lg">
             View
-          </button>
+          </Button>
         </div>
       </article>
 
       {/* Button — "Surprise me" when idle, "Another one" when revealed */}
       {/* TODO: fetch random series and show card on click */}
-      <button className="px-6 py-2 border border-edge rounded-xl text-sm font-medium text-fg hover:bg-subtle transition-colors">
+      <Button variant="secondary" className="px-6 py-2 text-sm font-medium rounded-xl">
         Another one
-      </button>
+      </Button>
 
     </section>
   );

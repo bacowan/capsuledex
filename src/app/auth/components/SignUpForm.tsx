@@ -5,6 +5,7 @@ import createClient from "@/lib/supabase/ssrClient"
 import { meetsPasswordRequirements } from "@/lib/password"
 import { isValidEmail } from "@/lib/email"
 import { useSearchParams, useRouter } from "next/navigation"
+import Button from "@/components/Button"
 
 export default function SignUpForm() {
   const searchParams = useSearchParams()
@@ -89,14 +90,14 @@ export default function SignUpForm() {
         <p className="text-xs text-red-500 text-center">{submitError}</p>
       )}
 
-      <button
+      <Button
         type="submit"
-        className="w-full py-2 px-4 bg-brand hover:bg-brand-hover text-white text-sm font-medium rounded-lg transition-colors mt-1 cursor-pointer disabled:opacity-50 disabled:!cursor-default disabled:hover:bg-brand"
         disabled={!isFormValid}
+        className="w-full py-2 px-4 text-sm rounded-lg mt-1"
         onClick={onCreateAccountClicked}
       >
         Create account
-      </button>
+      </Button>
 
       <p className="text-xs text-fg-muted text-center">
         By signing up you agree to our{" "}

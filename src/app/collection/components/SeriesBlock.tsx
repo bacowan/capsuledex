@@ -1,4 +1,6 @@
 import VariantCard from "./VariantCard";
+import Badge from "@/components/Badge";
+import ProgressBar from "@/components/ProgressBar";
 
 type Variant = {
   name: string;
@@ -31,19 +33,14 @@ export default function SeriesBlock({ series, brand, owned, total, complete, var
         {/* Right — badge / progress, optional scroll hint, divider, pamphlet button */}
         <div className="flex items-center gap-2 shrink-0">
           {complete ? (
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-success text-green-800 font-medium">
-              Complete
-            </span>
+            <Badge variant="success">Complete</Badge>
           ) : (
             <>
               <span className="text-xs text-fg-secondary">
                 {owned}/{total}
               </span>
-              <div className="w-12 h-1 rounded-full bg-subtle overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-brand"
-                  style={{ width: `${progressPct}%` }}
-                />
+              <div className="w-12">
+                <ProgressBar value={progressPct} />
               </div>
             </>
           )}

@@ -1,6 +1,7 @@
 "use client"
 
 import { CapsuleData } from "../ScannerSheet"
+import Button from "@/components/Button"
 
 type Props = {
   result: CapsuleData
@@ -21,18 +22,12 @@ export default function ScannerConfirm({ result, onConfirm, onScanAnother }: Pro
       <footer className="px-3 pb-4 pt-3">
         <h2 className="text-[13px] font-medium text-fg mb-1">Does this look right?</h2>
         <p className="text-xs text-fg-secondary mb-3">Review the details before uploading.</p>
-        <button
-          onClick={onConfirm}
-          className="w-full py-2.5 bg-brand text-white text-sm font-medium rounded-lg mb-2 hover:bg-brand-hover transition-colors"
-        >
+        <Button onClick={onConfirm} className="w-full py-2.5 text-sm rounded-lg mb-2">
           Confirm & upload
-        </button>
-        <button
-          onClick={onScanAnother}
-          className="w-full py-2 border border-edge rounded-lg text-xs text-fg-secondary hover:bg-subtle transition-colors"
-        >
+        </Button>
+        <Button onClick={onScanAnother} variant="secondary" className="w-full py-2 text-xs text-fg-secondary rounded-lg">
           Scan another
-        </button>
+        </Button>
       </footer>
     </section>
   )

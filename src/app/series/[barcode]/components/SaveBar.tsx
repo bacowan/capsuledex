@@ -1,4 +1,5 @@
 import { ExternalLink } from 'react-feather'
+import Button from '@/components/Button'
 
 type Props = {
     hasUnsavedChanges: boolean
@@ -22,13 +23,13 @@ export default function SaveBar({ hasUnsavedChanges, isSaving, onSave }: Props) 
                     </>
                 )}
             </p>
-            <button
+            <Button
                 onClick={onSave}
                 disabled={!hasUnsavedChanges || isSaving}
-                className="w-full h-[44px] bg-brand text-white font-medium text-[15px] rounded-xl disabled:opacity-40 disabled:cursor-default"
+                className="w-full h-[44px] text-[15px] rounded-xl"
             >
                 {isSaving ? 'Saving…' : 'Save changes'}
-            </button>
+            </Button>
         </div>
     )
 }

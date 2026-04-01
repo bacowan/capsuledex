@@ -1,3 +1,6 @@
+import Badge from "@/components/Badge"
+import SectionHeader from "@/components/SectionHeader"
+
 const feedItems = [
   { emoji: "🐧", name: "Penguin Parade Vol.3", meta: "Qualia · 5 variants · 2 min ago", badge: true },
   { emoji: "🌙", name: "Moonlight Cats", meta: "Kitan Club · 6 variants · 14 min ago", badge: true },
@@ -9,13 +12,12 @@ const feedItems = [
 export default function RecentFeed() {
   return (
     <section className="px-5 pt-6">
-      <div className="flex items-baseline justify-between mb-3.5">
-        <span className="text-[13px] font-medium text-fg">Recently added</span>
+      <SectionHeader title="Recently added" className="mb-3.5">
         {/* TODO: link to /browse */}
         <button className="text-[12px] text-fg-secondary hover:text-fg">
           Browse all →
         </button>
-      </div>
+      </SectionHeader>
 
       <ul>
         {feedItems.map((item) => (
@@ -30,11 +32,7 @@ export default function RecentFeed() {
               <p className="text-[13px] font-medium text-fg truncate">{item.name}</p>
               <p className="text-[11px] text-fg-muted mt-0.5">{item.meta}</p>
             </div>
-            {item.badge && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent-surface text-fg-accent-secondary font-medium shrink-0">
-                New
-              </span>
-            )}
+            {item.badge && <Badge>New</Badge>}
           </li>
         ))}
       </ul>
