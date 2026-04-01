@@ -11,7 +11,7 @@ export default function BrowseSearchBar() {
         {/* TODO: filter series list on input */}
         <input
           type="text"
-          placeholder="Search series or brands…"
+          placeholder="Search series, brands or collectors…"
           className="flex-1 px-3 text-sm text-fg outline-none placeholder:text-fg-muted bg-transparent h-full"
         />
       </div>
