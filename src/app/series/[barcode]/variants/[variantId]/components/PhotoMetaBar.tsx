@@ -1,12 +1,14 @@
+import Button from "@/components/Button";
+
 export default function PhotoMetaBar() {
   return (
-    <div className="px-4 py-2.5 border-b border-neutral-100 bg-white flex items-center justify-between">
+    <div className="px-4 py-2.5 border-b border-edge-subtle bg-surface flex items-center justify-between">
       {/* State A — photo exists */}
       {/* TODO: show only the correct state based on whether photos exist */}
       <>
-        <span className="text-[11px] text-neutral-400">Top-voted · 3 photos total</span>
+        <span className="text-[11px] text-fg-muted">Top-voted · 3 photos total</span>
         {/* TODO: navigate to photo gallery */}
-        <button className="flex items-center gap-1 text-xs text-neutral-500 bg-transparent border-none cursor-pointer hover:text-neutral-700 p-0">
+        <Button variant="ghost" className="flex items-center gap-1 text-xs cursor-pointer">
           Browse all photos
           <svg
             viewBox="0 0 24 24"
@@ -19,12 +21,12 @@ export default function PhotoMetaBar() {
           >
             <path d="M9 18l6-6-6-6" />
           </svg>
-        </button>
+        </Button>
       </>
 
       {/* State B — no photos */}
       {/* TODO: show only the correct state based on whether photos exist */}
-      {/* <span className="text-[11px] text-neutral-400">No photos yet</span> */}
+      {/* <span className="text-[11px] text-fg-muted">No photos yet</span> */}
     </div>
   );
 }

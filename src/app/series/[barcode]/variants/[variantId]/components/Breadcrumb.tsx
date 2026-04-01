@@ -1,8 +1,8 @@
 export default function Breadcrumb() {
   return (
-    <div className="px-4 py-3 border-b border-neutral-100 bg-white">
+    <div className="px-4 py-3 border-b border-edge-subtle bg-surface">
       {/* TODO: link to /series/[barcode] */}
-      <a className="inline-flex items-center gap-1 text-xs text-neutral-500 cursor-pointer hover:text-neutral-700 no-underline">
+      <a className="inline-flex items-center gap-1 text-xs text-fg-secondary cursor-pointer hover:text-fg no-underline">
         <svg
           viewBox="0 0 24 24"
           fill="none"

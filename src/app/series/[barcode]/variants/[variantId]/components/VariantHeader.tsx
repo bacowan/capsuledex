@@ -3,22 +3,22 @@ import CheckmarkIcon from "./CheckmarkIcon";
 
 export default function VariantHeader() {
   return (
-    <div className="px-4 pt-4 pb-5 border-b border-neutral-100 bg-white">
+    <div className="px-4 pt-4 pb-5 border-b border-edge-subtle bg-surface">
       <div className="flex items-start gap-3">
         {/* Left block */}
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] uppercase tracking-wider text-neutral-400 mb-1">
+          <p className="text-[11px] uppercase tracking-wider text-fg-muted mb-1">
             Penguin Parade Vol.3 · #1
           </p>
-          <h1 className="text-xl font-medium text-neutral-900 tracking-tight leading-tight mb-1">
+          <h1 className="text-xl font-medium text-fg tracking-tight leading-tight mb-1">
             Emperor
           </h1>
-          <p className="text-xs text-neutral-500">Qualia</p>
+          <p className="text-xs text-fg-secondary">Qualia</p>
         </div>
 
         {/* Copy link button */}
         {/* TODO: copy variant URL to clipboard */}
-        <button className="shrink-0 mt-0.5 w-[34px] h-[34px] rounded-lg border border-neutral-200 flex items-center justify-center cursor-pointer hover:bg-neutral-50 transition-colors bg-transparent">
+        <Button variant="secondary" className="shrink-0 mt-0.5 w-[34px] h-[34px] rounded-lg flex items-center justify-center cursor-pointer">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -31,7 +31,7 @@ export default function VariantHeader() {
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
           </svg>
-        </button>
+        </Button>
       </div>
 
       {/* Owned button — two states, always visible for styling */}

@@ -5,7 +5,7 @@ export default function PhotoArea() {
     <>
       {/* State A — photo exists */}
       {/* TODO: show only the correct state based on whether photos exist */}
-      <div className="aspect-square max-h-[360px] relative overflow-hidden flex items-center justify-center bg-[#E1F5EE]">
+      <div className="aspect-square max-h-[360px] mx-auto relative overflow-hidden flex items-center justify-center bg-[#E1F5EE]">
         {/* Placeholder — will be replaced by actual <img> with object-fit: cover */}
         <span className="text-7xl">🐧</span>
 
@@ -41,7 +41,7 @@ export default function PhotoArea() {
 
       {/* State B — no photos yet */}
       {/* TODO: show only the correct state based on whether photos exist */}
-      <div className="aspect-square max-h-[360px] relative overflow-hidden flex items-center justify-center bg-neutral-100">
+      <div className="aspect-square max-h-[360px] mx-auto relative overflow-hidden flex items-center justify-center bg-subtle">
         <div className="flex flex-col items-center justify-center gap-2.5 text-center">
           <CameraIcon className="w-8 h-8 text-black/20" />
           <p className="text-sm font-medium text-black/30">No photos yet</p>

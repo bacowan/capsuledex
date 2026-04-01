@@ -1,3 +1,4 @@
+import Button from "@/components/Button";
 import SectionHeader from "@/components/SectionHeader";
 
 const collectors = [
@@ -10,13 +11,13 @@ const collectors = [
 
 export default function CollectorsSection() {
   return (
-    <div className="px-4 pt-4 pb-6 bg-white">
+    <div className="px-4 pt-4 pb-6 bg-surface">
       {/* Section header */}
       {/* TODO: navigate to collectors list */}
       <SectionHeader title="12 collectors own this" className="mb-3">
-        <button className="text-xs text-neutral-500 bg-transparent border-none cursor-pointer hover:text-neutral-700 p-0">
+        <Button variant="ghost" className="text-xs cursor-pointer">
           See all
-        </button>
+        </Button>
       </SectionHeader>
 
       {/* Avatar row */}
@@ -24,12 +25,12 @@ export default function CollectorsSection() {
         {collectors.map((collector) => (
           <div key={collector.label} className="flex flex-col items-center gap-1">
             <div
-              className="w-9 h-9 rounded-full border border-neutral-100 flex items-center justify-center text-base"
+              className="w-9 h-9 rounded-full border border-edge-subtle flex items-center justify-center text-base"
               style={{ backgroundColor: collector.bg }}
             >
               {collector.emoji}
             </div>
-            <span className="text-[10px] text-neutral-400 max-w-[44px] text-center truncate">
+            <span className="text-[10px] text-fg-muted max-w-[44px] text-center truncate">
               {collector.label}
             </span>
           </div>
@@ -37,10 +38,10 @@ export default function CollectorsSection() {
 
         {/* Overflow pill */}
         <div className="flex flex-col items-center gap-1">
-          <div className="w-9 h-9 rounded-full bg-neutral-100 border border-neutral-100 flex items-center justify-center">
-            <span className="text-[11px] font-medium text-neutral-500">+7</span>
+          <div className="w-9 h-9 rounded-full bg-subtle border border-edge-subtle flex items-center justify-center">
+            <span className="text-[11px] font-medium text-fg-secondary">+7</span>
           </div>
-          <span className="text-[10px] text-neutral-400 max-w-[44px] text-center truncate">
+          <span className="text-[10px] text-fg-muted max-w-[44px] text-center truncate">
             more
           </span>
         </div>
