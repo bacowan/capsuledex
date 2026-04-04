@@ -13,3 +13,11 @@ export class ConflictError extends Error {
 export class UnprocessableError extends Error {
     constructor(message: string) { super(message) }
 }
+
+export class ExceededMaxPageSizeError extends Error {
+    constructor(message: string) { super(message) }
+}
+
+export class InvalidValueError extends Error {
+    constructor(message: string) { super(message) }
+}

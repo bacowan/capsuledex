@@ -2,24 +2,24 @@ import sql from "@/lib/db"
 import supabase from "@/lib/supabase/jwtSupabase"
 import sharp from "sharp"
 import { NotFoundError } from "./errors"
-import { findPamphletsByBarcode, upsertPamphlet } from "@/repositories/pamphlets"
-import { getPamphletPath } from "@/lib/supabaseStorage"
+import { findSeriesImagesByBarcode, upsertSeriesImage } from "@/repositories/seriesImage"
+import { getSeriesImagePath } from "@/lib/supabaseStorage"
 
-export type PamphletResponse = {
-    'is-front': boolean
+export type SeriesImageResponse = {
+    type: 'P' | 'M'
     url: string
     'file-name': string
 }
 
 // throws NotFoundError
-export async function getPamphlets(barcode: string): Promise<PamphletResponse[]> {
-    const pamphlets = await findPamphletsByBarcode(barcode)
-    if (!pamphlets) throw new NotFoundError()
+export async function getSeriesImages(barcode: string): Promise<SeriesImageResponse[]> {
+    const seriesImages = await findSeriesImagesByBarcode(barcode)
+    if (!seriesImages) throw new NotFoundError()
 
-    return pamphlets.map(p => {
-        const path = `series/${barcode}/pamphlets/${p.is_front ? 'front' : 'back'}/${p.file_name}`
+    return seriesImages.map(p => {
+        const path = `series/${barcode}/images/${p.type}/${p.file_name}`
         return {
-            'is-front': p.is_front,
+            type: p.type,
             url: supabase.storage.from('public_images').getPublicUrl(path).data.publicUrl,
             'file-name': p.file_name,
         }
@@ -29,7 +29,7 @@ export async function getPamphlets(barcode: string): Promise<PamphletResponse[]>
 // throws NotFoundError
 export async function uploadPamphlet(
     barcode: string,
-    side: 'front' | 'back',
+    type: 'P' | 'M',
     imageBuffer: ArrayBuffer,
     contentType: string,
     user: { id: string },
@@ -38,10 +38,10 @@ export async function uploadPamphlet(
     const newFileName = `${crypto.randomUUID()}.${contentType.slice('image/'.length)}`
 
     const url = await sql.begin(async _tx => {
-        const found = await upsertPamphlet(barcode, newFileName, side === 'front', user.id)
+        const found = await upsertSeriesImage(barcode, newFileName, type, user.id)
         if (!found) throw new NotFoundError()
 
-        const path = getPamphletPath(barcode, newFileName, side)
+        const path = getSeriesImagePath(barcode, newFileName, type)
         const { error: uploadError } = await supabase.storage
             .from('public_images')
             .upload(path, stripped, { upsert: true })

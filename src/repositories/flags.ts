@@ -2,7 +2,7 @@ import sql from "@/lib/db"
 
 export async function insertFlag(
     barcode: string,
-    isFront: boolean,
+    type: 'P' | 'M',
     fileName: string,
     userId: string,
 ): Promise<boolean> {
@@ -12,7 +12,7 @@ export async function insertFlag(
         FROM series AS s
         INNER JOIN pamphlet AS p
             ON p.series_id = s.id
-            AND p.is_front = ${isFront}
+            AND p.type = ${type}
             AND p.file_name = ${fileName}
         INNER JOIN user_profile AS up ON up.public_id = ${userId}
         WHERE s.barcode = ${barcode}
@@ -24,7 +24,7 @@ export async function insertFlag(
 
 export async function deleteFlag(
     barcode: string,
-    isFront: boolean,
+    type: 'P' | 'M',
     fileName: string,
     userId: string,
 ): Promise<void> {
@@ -35,7 +35,7 @@ export async function deleteFlag(
             FROM series AS s
             INNER JOIN pamphlet AS p
                 ON p.series_id = s.id
-                AND p.is_front = ${isFront}
+                AND p.type = ${type}
                 AND p.file_name = ${fileName}
             WHERE s.barcode = ${barcode}
         )

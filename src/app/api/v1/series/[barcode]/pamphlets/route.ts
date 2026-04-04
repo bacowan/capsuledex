@@ -1,4 +1,4 @@
-import { getPamphlets } from "@/services/pamphlets"
+import { getPamphlets } from "@/services/seriesImage"
 import { NotFoundError } from "@/services/errors"
 
 export async function GET(

@@ -1,17 +1,19 @@
 import postgres from "postgres"
 import { ERROR_CODES } from "@/lib/dbConstants"
-import { ConflictError, NotFoundError, UnprocessableError } from "./errors"
+import { ConflictError, ExceededMaxPageSizeError, InvalidValueError, NotFoundError, UnprocessableError } from "./errors"
 import { findSeriesByBarcode, insertSeries } from "@/repositories/series"
-import { getPamphletUrl } from "@/lib/supabaseStorage"
+import { getSeriesImageUrl } from "@/lib/supabaseStorage"
+import { listSeries as listSeriesRepo } from "@/repositories/series"
 
 export type SeriesResponse = {
     barcode: string
     line: string | null
     name: string | null
     url: string | null
-    'main-pamphlet': {
+    'main-image': {
         filename: string,
-        url: string
+        url: string,
+        type: "M" | "P"
     } | null
     brand: { id: string; name: string; url: string | null }
     variants: { id: string; name: string }[]
@@ -27,9 +29,10 @@ export async function getSeries(barcode: string): Promise<SeriesResponse> {
         line: series.line,
         name: series.name,
         url: series.url,
-        'main-pamphlet': series.main_pamphlet_file_name ? {
-            filename: series.main_pamphlet_file_name,
-            url: getPamphletUrl(barcode, series.main_pamphlet_file_name, "front")
+        'main-image': series.main_image ? {
+            filename: series.main_image.file_name,
+            url: getSeriesImageUrl(barcode, series.main_image.file_name, series.main_image.type),
+            type: series.main_image.type
         } : null,
         brand: series.brand,
         variants: series.variants ?? [],
@@ -59,5 +62,47 @@ export async function createSeries(
             throw new UnprocessableError('Brand with given ID does not exist')
         }
         throw error
+    }
+}
+
+const MAX_SERIES_SEARCH_PAGE_SIZE = Number(process.env.MAX_SERIES_SEARCH_PAGE_SIZE ?? 20)
+
+export type SeriesListResponse = {
+    barcode: string,
+    line: string | null,
+    name: string | null,
+    "main-image-url": string | null,
+    brand: string,
+    "variant-file-names": string[]
+}
+
+export async function listSeries(
+    query: string | null,
+    sort: "recent" | "popular" | "alphabetical",
+    page: number,
+    pageSize: number
+): Promise<{ results: SeriesListResponse[]; total: number }> {
+    if (pageSize > MAX_SERIES_SEARCH_PAGE_SIZE) {
+        throw new ExceededMaxPageSizeError(`Exceeded Max Page Size of ${MAX_SERIES_SEARCH_PAGE_SIZE}`)
+    }
+    if (page < 0) {
+        throw new InvalidValueError("Page parameter needs to be a positive number")
+    }
+
+    const results = await listSeriesRepo(query, sort, page, pageSize)
+    return {
+        results: results.map(r => ({
+            barcode: r.barcode,
+            line: r.line,
+            name: r.name,
+            "main-image-url": r.main_image !== null ?
+                getSeriesImageUrl(
+                    r.barcode,
+                    r.main_image.file_name,
+                    r.main_image.type) : null,
+            brand: r.brand,
+            "variant-file-names": r.variant_file_names
+        })),
+        total: results.length
     }
 }

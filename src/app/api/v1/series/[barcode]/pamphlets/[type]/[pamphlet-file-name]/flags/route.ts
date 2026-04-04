@@ -4,19 +4,19 @@ import { NotFoundError } from "@/services/errors"
 
 export async function PUT(
     request: Request,
-    { params }: { params: Promise<{ barcode: string, side: string, 'pamphlet-file-name': string }>}
+    { params }: { params: Promise<{ barcode: string, type: string, 'pamphlet-file-name': string }>}
 ) {
-    const { barcode, side, 'pamphlet-file-name': pamphletFileName } = await params
+    const { barcode, type, 'pamphlet-file-name': pamphletFileName } = await params
 
     const user = await authorize(request)
     if (user instanceof Response) return user
 
-    if (side !== 'front' && side !== 'back') {
+    if (type !== 'P' && type !== 'M') {
         return Response.json({ error: 'Not found' }, { status: 404 })
     }
 
     try {
-        await addFlag(barcode, side === 'front', pamphletFileName, user)
+        await addFlag(barcode, type, pamphletFileName, user)
         return Response.json({}, { status: 201 })
     } catch (error) {
         if (error instanceof NotFoundError) return Response.json({ error: 'Not found' }, { status: 404 })
@@ -27,19 +27,19 @@ export async function PUT(
 
 export async function DELETE(
     request: Request,
-    { params }: { params: Promise<{ barcode: string, side: string, 'pamphlet-file-name': string }>}
+    { params }: { params: Promise<{ barcode: string, type: string, 'pamphlet-file-name': string }>}
 ) {
-    const { barcode, side, 'pamphlet-file-name': pamphletFileName } = await params
+    const { barcode, type, 'pamphlet-file-name': pamphletFileName } = await params
 
     const user = await authorize(request)
     if (user instanceof Response) return user
 
-    if (side !== 'front' && side !== 'back') {
+    if (type !== 'P' && type !== 'M') {
         return Response.json({ error: 'Not found' }, { status: 404 })
     }
 
     try {
-        await removeFlag(barcode, side === 'front', pamphletFileName, user)
+        await removeFlag(barcode, type, pamphletFileName, user)
         return new Response(null, { status: 204 })
     } catch (error) {
         console.log(error)

@@ -4,5 +4,6 @@ create table series (
     name text,
     line text,
     official_url text,
-    brand_id bigint not null references brand (id)
+    brand_id bigint not null references brand (id),
+    created_on TIMESTAMPTZ DEFAULT now()
 )

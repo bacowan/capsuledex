@@ -1,11 +1,11 @@
 import 'server-only'
 import supabase from './supabase/jwtSupabase'
 
-export const getPamphletPath = (barcode: string, filename: string, side: "front" | "back") => {
-    return `series/${barcode}/pamphlets/${side}/${filename}`
+export const getSeriesImagePath = (barcode: string, filename: string, type: 'P' | 'M') => {
+    return `series/${barcode}/${type}/${filename}`
 }
 
-export const getPamphletUrl = (barcode: string, filename: string, side: "front" | "back") => {
-    const path = getPamphletPath(barcode, filename, side)
+export const getSeriesImageUrl = (barcode: string, filename: string, type: 'P' | 'M') => {
+    const path = getSeriesImagePath(barcode, filename, type)
     return supabase.storage.from('public_images').getPublicUrl(path).data.publicUrl
 }

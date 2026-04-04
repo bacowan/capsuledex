@@ -1,4 +1,5 @@
 import sql from "@/lib/db"
+import postgres from "postgres"
 import { z } from "zod"
 
 const seriesSchema = z.object({
@@ -6,7 +7,10 @@ const seriesSchema = z.object({
     line: z.string().nullable(),
     name: z.string().nullable(),
     url: z.string().nullable(),
-    main_pamphlet_file_name: z.string().nullable(),
+    main_image: z.object({
+        file_name: z.string(),
+        type: z.enum(["M", "P"])
+    }).nullable(),
     brand: z.object({
         id: z.string(),
         name: z.string(),
@@ -33,9 +37,11 @@ export async function findSeriesByBarcode(barcode: string): Promise<SeriesRow | 
                 'id', v.public_id,
                 'name', v.name
             )) AS variants,
-            (SELECT p.file_name FROM pamphlet AS p
-             WHERE p.series_id = s.id AND p.is_front = true
-             ORDER BY p.id ASC LIMIT 1) AS main_pamphlet_file_name
+            (SELECT p.file_name, p.type
+                FROM series_image AS si
+                WHERE si.series_id = s.id
+                ORDER BY p.id ASC LIMIT 1
+            ) AS main_image
         FROM series AS s
         INNER JOIN brand AS b ON s.brand_id = b.id
         LEFT JOIN variant AS v ON v.series_id = s.id
@@ -73,4 +79,84 @@ export async function insertSeries(
     `
 
     return z.array(idSchema).parse(rows).map(r => r.public_id)
+}
+
+const seriesListItemSchema = z.object({
+    barcode: z.string(),
+    line: z.string().nullable(),
+    name: z.string().nullable(),
+    main_image: z.object({
+        file_name: z.string(),
+        type: z.enum(["M", "P"])
+    }).nullable(),
+    brand: z.string(),
+    variant_file_names: z.array(z.string())
+})
+
+export type SeriesListItem = z.infer<typeof seriesListItemSchema>
+
+export async function listSeries(
+    query: string | null,
+    sort: "recent" | "popular" | "alphabetical",
+    page: number,
+    pageSize: number
+): Promise<SeriesListItem[]> {
+    let orderBy: postgres.PendingQuery<postgres.Row[]>
+    let extraJoins: postgres.PendingQuery<postgres.Row[]>
+    let where: postgres.PendingQuery<postgres.Row[]>
+    let paginate = sql`
+        LIMIT ${pageSize} OFFSET ${page * pageSize}
+    `
+    if (sort === "recent") {
+        extraJoins = sql``
+        orderBy = sql`
+            ORDER BY s.created_on DESC
+        `
+    }
+    else if (sort === "popular") {
+        extraJoins = sql`
+            LEFT JOIN user_collection AS c ON c.variant_id = v.id
+        `
+        orderBy = sql`
+            ORDER BY COUNT(v.id) DESC
+        `
+    }
+    else {
+        extraJoins = sql``
+        orderBy = sql`
+            ORDER BY s.name DESC
+        `
+    }
+    if (query === null) {
+        where = sql``
+    }
+    else {
+        where = sql`
+            WHERE s.name LIKE %${query}% OR b.name LIKE %${query}%
+        `
+    }
+    const rows = await sql`
+        SELECT 
+            s.barcode,
+            s.line,
+            s.name,
+            b.name AS brand,
+            json_agg(
+                vi.file_name
+            ) AS variant_file_names,
+            (SELECT p.file_name, p.type
+                FROM series_image AS si
+                WHERE si.series_id = s.id
+                ORDER BY p.id ASC LIMIT 1
+            ) AS main_image
+        FROM series AS s
+        INNER JOIN brand AS b ON s.brand_id = b.id
+        LEFT JOIN variant AS v ON v.series_id = s.id
+        LEFT JOIN variant_image AS vi ON vi.variant_id = v.id
+        ${extraJoins}
+        ${where}
+        ${orderBy}
+        ${paginate}
+    `
+    return z.array(seriesListItemSchema).parse(rows)
 }

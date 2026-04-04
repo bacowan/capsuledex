@@ -1,7 +1,8 @@
 create table user_profile (
     id bigint primary key generated always as identity,
     public_id UUID not null,
-    is_collection_public boolean not null default false
+    is_collection_public boolean not null default false,
+    created_on TIMESTAMPTZ DEFAULT now()
 );
 
 -- trigger function
