@@ -3,6 +3,10 @@ import BrowseTabs from "./components/BrowseTabs";
 import SeriesPanel from "./components/SeriesPanel";
 import CollectorsPanel from "./components/CollectorsPanel";
 import Pagination from "./components/Pagination";
+import { listSeries } from "@/services/series";
+
+const maxQueryLength = Number(process.env.NEXT_PUBLIC_MAX_SERIES_SEARCH_QUERY_LENGTH) || 100
+const pageSize = Number(process.env.NEXT_PUBLIC_MAX_SERIES_SEARCH_PAGE_SIZE) || 20
 
 const SEARCH_TYPES = ["collectors", "series"] as const
 type SearchType = (typeof SEARCH_TYPES)[number]
@@ -23,10 +27,13 @@ export default async function BrowsePage({
 }) {
   const params = await searchParams
   const type = isSearchType(params.type) ? params.type : "series"
-  const query = params.q || ""
+  const query = (typeof params.q === "string" ? params.q : "").slice(0, maxQueryLength)
   const sort = isSortType(params.sort) ? params.sort : "popular"
+  const page = Math.max(
+    typeof params.page === "string" ? parseInt(params.page) : 0,
+    0)
 
-  
+  const series = await listSeries(query, sort, page, pageSize)
 
   return (
     <main>

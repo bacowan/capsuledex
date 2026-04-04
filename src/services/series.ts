@@ -95,11 +95,11 @@ export async function listSeries(
             barcode: r.barcode,
             line: r.line,
             name: r.name,
-            "main-image-url": r.main_image !== null ?
+            "main-image-url": r.main_image_file_name && r.main_image_type ?
                 getSeriesImageUrl(
                     r.barcode,
-                    r.main_image.file_name,
-                    r.main_image.type) : null,
+                    r.main_image_file_name,
+                    r.main_image_type) : null,
             brand: r.brand,
             "variant-file-names": r.variant_file_names
         })),

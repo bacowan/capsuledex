@@ -85,10 +85,8 @@ const seriesListItemSchema = z.object({
     barcode: z.string(),
     line: z.string().nullable(),
     name: z.string().nullable(),
-    main_image: z.object({
-        file_name: z.string(),
-        type: z.enum(["M", "P"])
-    }).nullable(),
+    main_image_file_name: z.string().nullable(),
+    main_image_type: z.enum(["M", "P"]).nullable(),
     brand: z.string(),
     variant_file_names: z.array(z.string())
 })
@@ -132,7 +130,7 @@ export async function listSeries(
     }
     else {
         where = sql`
-            WHERE s.name LIKE %${query}% OR b.name LIKE %${query}%
+            WHERE s.name LIKE ${"%" + query + "%"} OR b.name LIKE ${"%" + query + "%"}
         `
     }
     const rows = await sql`
@@ -141,20 +139,25 @@ export async function listSeries(
             s.line,
             s.name,
             b.name AS brand,
-            json_agg(
-                vi.file_name
-            ) AS variant_file_names,
-            (SELECT p.file_name, p.type
-                FROM series_image AS si
-                WHERE si.series_id = s.id
-                ORDER BY p.id ASC LIMIT 1
-            ) AS main_image
+            COALESCE(
+                json_agg(
+                    vi.file_name
+                ) FILTER (WHERE vi.file_name IS NOT NULL),
+                '[]') AS variant_file_names,
+            main_image.file_name AS main_image_file_name,
+            main_image.type AS main_image_type
         FROM series AS s
         INNER JOIN brand AS b ON s.brand_id = b.id
         LEFT JOIN variant AS v ON v.series_id = s.id
         LEFT JOIN variant_image AS vi ON vi.variant_id = v.id
+        LEFT JOIN (
+            SELECT DISTINCT ON (series_id) file_name, type, series_id
+            FROM series_image
+            ORDER BY series_id, id ASC
+        ) AS main_image ON main_image.series_id = s.id
         ${extraJoins}
         ${where}
+        GROUP BY s.barcode, s.line, s.name, b.name, main_image.file_name, main_image.type
         ${orderBy}
         ${paginate}
     `

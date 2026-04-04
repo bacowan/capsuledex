@@ -4,6 +4,14 @@ if (!process.env.DB_URL) {
     throw Error("DB_URL environment variable not configured.")
 }
 
-const sql = postgres(process.env.DB_URL)
+let sql: postgres.Sql<{}>
+if (process.env.DEBUG === "true") {
+    sql = postgres(process.env.DB_URL, {
+        debug: (_, query, params) => console.log(query, params)
+    })
+}
+else {
+    sql = postgres(process.env.DB_URL)
+}
 
 export default sql
